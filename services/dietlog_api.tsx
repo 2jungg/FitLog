@@ -22,7 +22,8 @@ Based on the image, extract the following information and return it in a JSON fo
     "dietaryFiber": "number",
     "vitMin": "number",
     "sodium": "number"
-  }
+  },
+  "comment": "string",
 }
 
 Here are the specific requirements for each field:
@@ -38,9 +39,13 @@ Here are the specific requirements for each field:
 3.  **foodScore**:
     * This object contains detailed nutritional scores.
     * All scores within 'foodScore' (protein, fat, carbo, dietaryFiber, vitMin, sodium) must be numbers.
-    * The range for each of these detailed scores is **0.5 to 10**, with increments of **0.5**.
+    * The range for each of these detailed scores is **1 to 5**, with increments of **1**.
         * Higher scores indicate better nutritional value.
         * vitMin means vitamin and mineral.
+
+4.	**comment**:
+	* Leave some comment about the food and evaluate in one or two sentence *
+	* All your comment or should be **Korean** *
 Ensure the response is **only** a valid JSON object, without any additional text or markdown outside the JSON structure.
 `;
 

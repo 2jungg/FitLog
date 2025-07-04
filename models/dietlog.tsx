@@ -21,12 +21,14 @@ interface FoodScore {
 interface IResponse {
     category: FoodCategory;
     foodScore: FoodScore;
+    comment: string;
 }
 
 class APIResponse implements IResponse {
     constructor (
         public category: FoodCategory,
         public foodScore: FoodScore,
+        public comment: string,
     ) {}
 }
 
