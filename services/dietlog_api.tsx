@@ -44,8 +44,9 @@ Here are the specific requirements for each field:
         * vitMin means vitamin and mineral.
 
 4.	**comment**:
-	* Leave some comment about the food and evaluate in one or two sentence with cute emoticons. *
+	* Leave some comment about the food and evaluate in one sentence with cute emoticons. *
 	* All your comment or should be **Korean** *
+	* e.g. "이 식단은 다이어터에게 적합해요👍" *
 Ensure the response is **only** a valid JSON object, without any additional text or markdown outside the JSON structure.
 `;
 
