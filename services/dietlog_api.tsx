@@ -13,7 +13,7 @@ const promptText = `Analyze the provided image, which contains a food item.
 Based on the image, extract the following information and return it in a JSON format.
 
 {
-  "category": "FoodCategory_Enum_Value",
+  "foodName": "string",
   "foodScore": {
     "totScore": "number",
     "protein": "number",
@@ -28,9 +28,9 @@ Based on the image, extract the following information and return it in a JSON fo
 
 Here are the specific requirements for each field:
 
-1.  **category**:
-    * Determine the most appropriate food category from the following options: "KOREAN" (한식), "CHINESE" (중식), "JAPANESE" (일식), "WESTERN" (양식).
-    * The value should be one of these exact string literals.
+1.  **foodName**:
+    * Determine the most appropriate food name. *
+    * The name should be Korean. *
 
 2.  **totScore**:
     * An overall health score for the food, ranging from 0 to 100.
@@ -44,7 +44,7 @@ Here are the specific requirements for each field:
         * vitMin means vitamin and mineral.
 
 4.	**comment**:
-	* Leave some comment about the food and evaluate in one or two sentence *
+	* Leave some comment about the food and evaluate in one or two sentence with cute emoticons. *
 	* All your comment or should be **Korean** *
 Ensure the response is **only** a valid JSON object, without any additional text or markdown outside the JSON structure.
 `;
