@@ -1,10 +1,3 @@
-enum FoodCategory {
-    KOREAN = "한식",
-    CHINESE = "중식",
-    JAPANESE = "일식",
-    WESTERN = "양식",
-}
-
 interface FoodScore {
     // max score: 100
     totScore: number;
@@ -19,14 +12,14 @@ interface FoodScore {
 }
 
 interface IResponse {
-    category: FoodCategory;
+    foodName: string;
     foodScore: FoodScore;
     comment: string;
 }
 
 class APIResponse implements IResponse {
     constructor (
-        public category: FoodCategory,
+        public foodName: string,
         public foodScore: FoodScore,
         public comment: string,
     ) {}
