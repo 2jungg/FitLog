@@ -13,7 +13,6 @@ enum WorkoutCategory {
 
 interface workout {
     workoutId: string;      // use UUID
-    recordDate: Date;
     workoutCategory: WorkoutCategory;
     startTime: Date;
     endTime: Date;
