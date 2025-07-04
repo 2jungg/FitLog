@@ -18,20 +18,30 @@ interface FoodScore {
     sodium: number;
 }
 
+interface IResponse {
+    category: FoodCategory;
+    foodScore: FoodScore;
+}
+
+class APIResponse implements IResponse {
+    constructor (
+        public category: FoodCategory,
+        public foodScore: FoodScore,
+    ) {}
+}
+
 interface IDietLog {
     dietLogId: string;      // use UUID
     recordDate: Date;
-    category: FoodCategory;
     foodImgUrl: string;
-    foodScore: FoodScore;
+    responseData: APIResponse;
 }
 
 class DietLog implements IDietLog {
     constructor (
         public dietLogId: string,
         public recordDate: Date,
-        public category: FoodCategory,
         public foodImgUrl: string,
-        public foodScore: FoodScore,
+        public responseData: APIResponse,
     ) {}
 }
