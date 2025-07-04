@@ -8,7 +8,7 @@ if (!apiKey) {
 }
 const genAI = new GoogleGenerativeAI(apiKey);
 
-const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 const promptText = `Analyze the provided image, which contains a food item.
 Based on the image, extract the following information and return it in a JSON format.
 
@@ -48,6 +48,7 @@ Here are the specific requirements for each field:
 	* All your comment or should be **Korean** *
 	* e.g. "이 식단은 다이어터에게 적합해요👍" *
 Ensure the response is **only** a valid JSON object, without any additional text or markdown outside the JSON structure.
+Don't attach any backtick.
 `;
 
 export const sendToGemini = async (
