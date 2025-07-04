@@ -11,11 +11,22 @@ enum WorkoutCategory {
     Other = "기타"
 }
 
-interface workout {
+interface IWorkout {
     workoutId: string;      // use UUID
-    recordDate: Date;
     workoutCategory: WorkoutCategory;
     startTime: Date;
     endTime: Date;
     expectedCalory: number;
+    workoutImgUrl: string;
+}
+
+class Workout implements IWorkout {
+    constructor (
+        public workoutId: string,
+        public workoutCategory: WorkoutCategory,
+        public startTime: Date,
+        public endTime: Date,
+        public expectedCalory: number,
+        public workoutImgUrl: string,
+    ) {}
 }
