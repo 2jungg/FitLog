@@ -17,7 +17,7 @@ interface IResponse {
     comment: string;
 }
 
-class APIResponse implements IResponse {
+export class APIResponse implements IResponse {
     constructor (
         public foodName: string,
         public foodScore: FoodScore,
@@ -32,7 +32,7 @@ interface IDietLog {
     responseData: APIResponse;
 }
 
-class DietLog implements IDietLog {
+export class DietLog implements IDietLog {
     constructor (
         public dietLogId: string,
         public recordDate: Date,
