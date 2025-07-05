@@ -1,11 +1,13 @@
 import React from "react";
-import { NavigationContainer, useRoute } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ProfileScreen from "./screens/profile_screen";
 import WorkoutScreen from "./screens/workout_screen";
 import DietLogScreen from "./screens/dietlog_screen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { icons } from "../assets/icon/icons";
+import { View, StyleSheet } from "react-native";
+import AppBar from "./widgets/appbar";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,22 +15,34 @@ function TabNavigator() {
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, size }) => {
+                header: () => <AppBar title={route.name} />,
+                tabBarShowLabel: false,
+                tabBarIconStyle: styles.tabBarIcon,
+                tabBarStyle: styles.tabBar,
+                tabBarIcon: ({ focused }) => {
                     let IconComponent;
 
                     if (route.name === "운동") {
-                        IconComponent = focused ? icons.workout.color : icons.workout.black;
+                        IconComponent = focused
+                            ? icons.workout.color
+                            : icons.workout.black;
                     } else if (route.name === "식단") {
-                        IconComponent = focused ? icons.diet.color : icons.diet.black;
+                        IconComponent = focused
+                            ? icons.diet.color
+                            : icons.diet.black;
                     } else if (route.name === "프로필") {
-                        IconComponent = focused ? icons.profile.color : icons.profile.black;
+                        IconComponent = focused
+                            ? icons.profile.color
+                            : icons.profile.black;
                     }
 
                     if (!IconComponent) {
                         return null;
                     }
 
-                    return <IconComponent width={size} height={size} />;
+                    return <View style={styles.tabBarIconContainer}>
+                        <IconComponent />
+                    </View>;
                 },
                 tabBarActiveTintColor: "tomato",
                 tabBarInactiveTintColor: "gray",
@@ -42,9 +56,7 @@ function TabNavigator() {
 }
 
 function MainNavigator() {
-    return (
-        <TabNavigator />
-    );
+    return <TabNavigator />;
 }
 
 function App() {
@@ -56,5 +68,34 @@ function App() {
         </SafeAreaProvider>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBarIcon: {
+        width: 24,
+        height: 24,
+        alignContent: "center",
+        justifyContent: "center",
+        marginTop: 20,
+        marginBottom: 10,
+        marginLeft: 10,
+        marginRight: 10,
+    },
+    tabBar: {
+        height: 78,
+        backgroundColor: "#fff",
+        borderTopWidth: 0,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: -3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 10,
+    },
+    tabBarIconContainer: {
+        // Add any container styles if needed
+    },
+});
 
 export default App;

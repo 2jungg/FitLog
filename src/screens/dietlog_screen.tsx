@@ -40,6 +40,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    content: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
     text: {
         fontSize: 16,
         color: "#000",
