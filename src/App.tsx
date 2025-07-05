@@ -2,7 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ProfileScreen from "./screens/profile_screen";
-import WorkoutScreen from "./screens/workout_screen";
+import WorkoutStack from "./screens/workout_stack";
 import DietLogScreen from "./screens/dietlog_screen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { icons } from "../assets/icon/icons";
@@ -48,7 +48,7 @@ function TabNavigator() {
                 tabBarInactiveTintColor: "gray",
             })}
         >
-            <Tab.Screen name="운동" component={WorkoutScreen} />
+            <Tab.Screen name="운동" component={WorkoutStack} />
             <Tab.Screen name="식단" component={DietLogScreen} />
             <Tab.Screen name="프로필" component={ProfileScreen} />
         </Tab.Navigator>
