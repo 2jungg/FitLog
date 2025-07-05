@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { sendToGemini } from "./services/dietlog_api";
-import "./models/dietlog";
+import "../models/dietlog";
 import { NavigationContainer } from "@react-navigation/native";
 
 const isDarkMode = useColorScheme() === "dark";
