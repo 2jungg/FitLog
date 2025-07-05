@@ -7,7 +7,6 @@
 
 import { NewAppScreen } from "@react-native/new-app-screen";
 import React from 'react';
-import { NaviagtionContainer } from "@react-navigation/native";
 import {
     StatusBar,
     StyleSheet,
