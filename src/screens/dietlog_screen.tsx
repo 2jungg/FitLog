@@ -275,16 +275,16 @@ const styles = StyleSheet.create({
         color: "#333",
         marginLeft: 10,
     },
-    fab: {
-        position: "absolute",
-        bottom: 64,
+    fab:{
+        position: 'absolute',
+        bottom: 40,
         right: 24,
-        backgroundColor: "#8285FB",
+        backgroundColor: '#8285FB',
         width: 48,
         height: 48,
         borderRadius: 24,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         elevation: 6,
     },
     card: {
