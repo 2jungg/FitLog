@@ -11,7 +11,7 @@ interface IProfile {
     checkWeightLogExists(_weightlog: WeightLog): boolean;
 }
 
-class Profile implements IProfile {
+export class Profile implements IProfile {
     constructor (
         public username: string,
         public height: number,

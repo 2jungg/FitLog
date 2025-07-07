@@ -17,7 +17,7 @@ interface IResponse {
     comment: string;
 }
 
-class APIResponse implements IResponse {
+export class APIResponse implements IResponse {
     constructor (
         public foodName: string,
         public foodScore: FoodScore,
@@ -32,11 +32,28 @@ interface IDietLog {
     responseData: APIResponse;
 }
 
-class DietLog implements IDietLog {
+export class DietLog implements IDietLog {
     constructor (
         public dietLogId: string,
         public recordDate: Date,
         public foodImgUrl: string,
         public responseData: APIResponse,
     ) {}
+}
+
+interface DietLogsGroupByDate {
+    dietLogs: Map<Date, DietLog[]>;
+    addDietLog(dietLog: DietLog): void;
+}
+
+export class DietLogGroupByDate implements DietLogsGroupByDate {
+    dietLogs: Map<Date, DietLog[]> = new Map();
+
+    addDietLog(dietLog: DietLog): void {
+        const dateKey = dietLog.recordDate
+        if (!this.dietLogs.has(dateKey)) {
+            this.dietLogs.set(dateKey, []);
+        }
+        this.dietLogs.get(dateKey)?.push(dietLog);
+    }
 }

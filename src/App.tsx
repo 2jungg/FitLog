@@ -1,13 +1,17 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import ProfileScreen from "./screens/profile_screen";
 import WorkoutStack from "./screens/workout_stack";
-import DietLogScreen from "./screens/dietlog_screen";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { icons } from "../assets/icon/icons";
-import { View, StyleSheet } from "react-native";
+import DietLogStack from "./screens/dietlog_stack";
 import AppBar from "./widgets/appbar";
+
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { tab_icons } from "../assets/icon/icons";
+import { View, StyleSheet } from "react-native";
+import { DataProvider } from "./DataContext";
 
 const Tab = createBottomTabNavigator();
 
@@ -17,23 +21,23 @@ function TabNavigator() {
             screenOptions={({ route }) => ({
                 header: () => <AppBar title={route.name} />,
                 tabBarShowLabel: false,
-                tabBarIconStyle: styles.tabBarIcon,
+                tabBartab_iconstyle: styles.tabBarIcon,
                 tabBarStyle: styles.tabBar,
                 tabBarIcon: ({ focused }) => {
                     let IconComponent;
 
                     if (route.name === "운동") {
                         IconComponent = focused
-                            ? icons.workout.color
-                            : icons.workout.black;
+                            ? tab_icons.workout.color
+                            : tab_icons.workout.black;
                     } else if (route.name === "식단") {
                         IconComponent = focused
-                            ? icons.diet.color
-                            : icons.diet.black;
+                            ? tab_icons.diet.color
+                            : tab_icons.diet.black;
                     } else if (route.name === "프로필") {
                         IconComponent = focused
-                            ? icons.profile.color
-                            : icons.profile.black;
+                            ? tab_icons.profile.color
+                            : tab_icons.profile.black;
                     }
 
                     if (!IconComponent) {
@@ -49,7 +53,7 @@ function TabNavigator() {
             })}
         >
             <Tab.Screen name="운동" component={WorkoutStack} />
-            <Tab.Screen name="식단" component={DietLogScreen} />
+            <Tab.Screen name="식단" component={DietLogStack} />
             <Tab.Screen name="프로필" component={ProfileScreen} />
         </Tab.Navigator>
     );
@@ -62,9 +66,11 @@ function MainNavigator() {
 function App() {
     return (
         <SafeAreaProvider>
-            <NavigationContainer>
-                <MainNavigator />
-            </NavigationContainer>
+            <DataProvider>
+                <NavigationContainer>
+                    <MainNavigator />
+                </NavigationContainer>
+            </DataProvider>
         </SafeAreaProvider>
     );
 }
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
         elevation: 10,
     },
     tabBarIconContainer: {
-        // Add any container styles if needed
+        paddingTop: 20,
     },
 });
 

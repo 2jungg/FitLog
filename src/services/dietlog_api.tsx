@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Config from 'react-native-config';
-import '../models/dietlog';
+import { APIResponse } from '../models/dietlog';
 
 const apiKey = Config.GEMINI_API_KEY;
 if (!apiKey) {
