@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -6,6 +6,10 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
+    Pressable, 
+    Platform,
+    FlatList, 
+    ScrollView
 } from 'react-native';
 
 import {
@@ -13,26 +17,263 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
+import { launchImageLibrary } from "react-native-image-picker";
+import { useData } from "../DataContext";
+import { Workout, WorkoutCategory } from "../models/workout";
+import { Profile, WeightLog } from "../models/profile";
+import { util_icons } from "../../assets/icon/icons";
 
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function WorkoutFormScreen(){
-    //const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
+    const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
+    
+    const {userData, workoutData, setWorkoutData}  = useData();
+
+    {/*시간 설정 변수*/}
+    const [startTime, setStartTime] = useState(new Date());
+    const [showStartPicker, setShowStartPicker] = useState(false);
+    const [endTime, setEndTime] = useState(new Date());
+    const [showEndPicker, setShowEndPicker] = useState(false);
+
+    const handleConfirmStart = (selectedDate: Date) => {
+        setStartTime(selectedDate);
+        setShowStartPicker(false);
+    }
+
+    const handleConfirmEnd = (selectedDate: Date) => {
+        setEndTime(selectedDate);
+        setShowEndPicker(false);
+    }
+
+    {/*운동 종류 변수*/}
+    const [selectedExercise, setSelectedExercise] = useState('');
+    const [showExerciseList, setShowExerciseList] = useState(false);
+
+    const exerciseOptions= [
+        "근력 운동", "달리기", "필라테스", "구기 종목", "무술", 
+        "재활 운동", "맨몸 운동", "크로스핏", "수영", "기타"
+    ]
+
+    {/*칼로리 계산을 위한 변수*/}
+    const MET_VALUES: Record<string, number> = {
+        '근력 운동': 6.0,
+        '달리기': 8.0,
+        '필라테스': 3.0,
+        '구기 종목': 6.5,
+        '무술': 10.0,
+        '재활 운동': 3.5,
+        '맨몸 운동': 5.0,
+        '크로스핏': 8.0,
+        '수영': 7.0,
+    };
+
+    const normalize = (text: string) => {
+        return text.replace(/[^\p{L}\p{N}]/gu, '').trim();
+    };
+
+    const getWorkoutCategoryFromLabel = (label: string): WorkoutCategory => {
+        const entries = Object.entries(WorkoutCategory)
+            .filter(([key, value]) => typeof value === 'string') // 중요!!
+            .map(([key, value]) => [key, value as string] as [keyof typeof WorkoutCategory, string]);
+        
+        const normalizedLabel = normalize(label);
+
+        const found = entries.find(([_, value]) => {
+            console.log("🔍 비교 →", normalize(value), "vs", normalizedLabel);
+            return normalize(value) === normalizedLabel;
+        });
+        return found ? WorkoutCategory[found[0]] : WorkoutCategory.Other;
+    };
+
+
+    {/*칼로리 계산 변수*/}
+    const calculateCalories = (
+        start: Date,
+        end: Date,
+        exercise: string,
+        weight: number
+    ): number => {
+        const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+        console.log(durationMinutes);
+        const durationHours = durationMinutes / 60;
+        console.log("리스트비교:",normalize(exercise));
+        const MET = MET_VALUES[normalize(exercise)] ?? 4.0;
+        const cal = MET * weight * durationHours;
+
+        console.log("met: ", MET);
+        console.log("cal: ", cal);
+        return Math.round(cal);
+    };
+
+    {/*이미지 저장*/}
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const ImgBttn = util_icons.empty_img;
+    const handlePress = async () => {
+        try {
+            const result = await launchImageLibrary({
+                mediaType: "photo",
+                includeBase64: true,
+            });
+            
+            if (result.assets && result.assets.length > 0){
+                const asset = result.assets[0];
+                let imageUrl = "";
+
+
+                if (asset.base64 && asset.type){
+                    imageUrl = `data:${asset.type};base64,${asset.base64}`;
+                } else if (asset.uri){
+                    imageUrl = asset.uri;
+                }
+                setImageUrl(imageUrl);
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+
+    };
+
+    {/*운동 종료 시 가장 가까운 날짜의 몸무게 찾기*/}
+    const getNearestWeight = (weightLogs: WeightLog[], targetDate: Date): number | null => {
+        if (!weightLogs || weightLogs.length === 0) return null;
+
+        let nearest = weightLogs[0];
+        let minDiff = Math.abs(targetDate.getTime() - nearest.day.getTime());
+
+        for (let i = 1; i < weightLogs.length; i++) {
+            const diff = Math.abs(targetDate.getTime() - weightLogs[i].day.getTime());
+            if (diff < minDiff) {
+            nearest = weightLogs[i];
+            minDiff = diff;
+            }
+        }
+
+        return nearest.weight;
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>운동 기록 추가</Text>
+
+            <ScrollView contentContainerStyle={styles.scrollcontainer}>
+            {/*시작 날짜와 시작 시간*/}
             <Text style={styles.formtext}>시작 시간</Text>
-            <TextInput style={styles.input}/>
+            <Pressable style={styles.input} onPress={() => setShowStartPicker(true)}>
+                <Text>
+                    {startTime.toLocaleString()}
+                </Text>    
+            </Pressable>
+            {showStartPicker && (
+                <DateTimePickerModal
+                    isVisible={showStartPicker}
+                    mode="datetime"
+                    date={startTime}
+                    onConfirm={handleConfirmStart}
+                    onCancel={(() => setShowStartPicker(false))}
+                    locale='ko_KR'
+                    is24Hour={true}
+                />
+            )}
+
+            {/*종료 날짜 시간*/}
             <Text style={styles.formtext}>종료 시간</Text>
-            <TextInput style={styles.input}/>
+            <Pressable style={styles.input} onPress={() => setShowEndPicker(true)}>
+                <Text>
+                    {endTime.toLocaleString()}
+                </Text>
+            </Pressable>
+            {showEndPicker && (
+                <DateTimePickerModal
+                    isVisible={showEndPicker}
+                    mode="datetime"
+                    date={endTime}
+                    onConfirm={handleConfirmEnd}
+                    onCancel={(() => setShowEndPicker(false))}
+                    locale='ko_KR'
+                    is24Hour={true}
+                />
+            )}
+
+            {/*운동 종류*/}
             <Text style={styles.formtext}>운동 종류</Text>
-            <TextInput style={styles.input}/>
+            <Pressable style={styles.input} onPress={() => setShowExerciseList(prev => !prev)}>
+                <Text>{selectedExercise || "선택 안함"}</Text><Text>▼</Text>
+            </Pressable>
+            {showExerciseList && (
+                <ScrollView style={styles.exerciseListContainer} nestedScrollEnabled={true}>
+                    {exerciseOptions.map((item, index) => (
+                        <Pressable
+                            key={index}
+                            style={styles.exerciseItem}
+                            onPress={() => {
+                                setSelectedExercise(item);
+                                setShowExerciseList(false);
+                            }}
+                        >
+                            <Text>{item}</Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            )}
+            
+            {/*운동 사진*/}
             <Text style={styles.formtext}>운동 사진</Text>
-            <TextInput style={styles.input}/>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>완료</Text> 
+            <TouchableOpacity style={styles.imginput} onPress={handlePress}>
+            {imageUrl ? (
+                <Image source={{uri: imageUrl}} 
+                       style={styles.imginput}/>
+            ):(
+                <ImgBttn/>
+            )}
             </TouchableOpacity>
+
+
+            </ScrollView>
+
+           
+            <View style={styles.row}>
+                 {/*닫기 버튼*/}
+                <TouchableOpacity style={styles.button1}>
+                    <Text style={styles.buttonText1} onPress={() => navigation.navigate('Workout')}>닫기</Text> 
+                </TouchableOpacity>
+                 {/*완료 버튼*/}
+                <TouchableOpacity 
+                    style={styles.button2}
+                    onPress={() => {
+                        const targetWeight = getNearestWeight(userData?.weightLogs || [], startTime) || 65; // 기본값 65
+
+                        console.log("몸무게:", targetWeight);
+                        const expectedCalory = calculateCalories(new Date(startTime), new Date(endTime), normalize(selectedExercise), targetWeight);
+                        const workoutId = Date.now().toString(); // or use uuid()
+                        console.log (startTime);
+
+                        const workoutCategory = getWorkoutCategoryFromLabel(selectedExercise);
+                        console.log(WorkoutCategory);
+
+                        const newWorkout = new Workout(
+                            workoutId,
+                            workoutCategory,
+                            startTime,
+                            endTime,
+                            expectedCalory,
+                            imageUrl ?? ''
+                        );
+                        
+                        console.log(newWorkout.workoutCategory);
+
+                        // 기존 workoutdata에 추가
+                        setWorkoutData([...workoutData, newWorkout]);
+                        
+                        navigation.navigate('Workout'); 
+                    }}>
+
+                    <Text style={styles.buttonText2}>완료</Text> 
+                </TouchableOpacity>
+            </View>
         </View>
+        
     );
 }
 
@@ -48,13 +289,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#8285FB',
     },
+    scrollcontainer:{
+        paddingVertical: 20,
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5'
+    },
     formtext:{
         fontSize: 17, 
         width: 320,
-        marginLeft: 18,
         padding: 8,
     },
     input:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         borderWidth: 1,
         borderColor: '#ccc',
         padding: 8,
@@ -65,15 +312,61 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         backgroundColor: '#fff',
     },
-    button:{
+    exerciseListContainer:{
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 10,
+        marginHorizontal: 20,
+        padding: 8,
+        maxHeight: 100,
         width: 320,
+    },
+    exerciseItem:{
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#ddd',
+    },
+    imginput: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 12,
+        width: 320,
+        height: 320,
+        alignSelf: 'center',
+        borderRadius: 12,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    row:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 16
+    },
+    button1:{
+        width: 160,
+        height: 40,
+        backgroundColor: '#d9d9d9',
+        borderRadius: 12,
+        alignSelf: 'center',
+        padding: 10,
+    }, 
+    button2:{
+        width: 160,
         height: 40,
         backgroundColor: '#8285FB',
         borderRadius: 12,
         alignSelf: 'center',
         padding: 10
     }, 
-    buttonText:{
+    buttonText1:{
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 15,
+    },
+    buttonText2:{
         textAlign: 'center',
         color: '#fff',
         fontWeight: 'bold',

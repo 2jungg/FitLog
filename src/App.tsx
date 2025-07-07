@@ -77,8 +77,8 @@ function App() {
 
 const styles = StyleSheet.create({
     tabBarIcon: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
         alignContent: "center",
         justifyContent: "center",
         marginTop: 20,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     tabBar: {
-        height: 78,
+        height: 70,
         backgroundColor: "#fff",
         borderTopWidth: 0,
         shadowColor: "#000",
