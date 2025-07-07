@@ -1,7 +1,7 @@
 export enum WorkoutCategory {
     StrengthTraining = "💪근력 운동",
     Running = "🏃‍♂️달리기",
-    Yoga_Pila = "🧘‍♂️요가/필라테스",
+    Yoga_Pila = "🧘‍♂️필라테스",
     Sports = "🏀구기 종목",
     MartialArts = "🥋무술",
     Rehabilitation = "🩼재활 운동",

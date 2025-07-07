@@ -18,12 +18,18 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
 import { launchImageLibrary } from "react-native-image-picker";
+import { useData } from "../DataContext";
+import { Workout, WorkoutCategory } from "../models/workout";
+import { Profile, WeightLog } from "../models/profile";
+import { util_icons } from "../../assets/icon/icons";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function WorkoutFormScreen(){
     const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
     
+    const {userData, workoutData, setWorkoutData}  = useData();
+
     {/*시간 설정 변수*/}
     const [startTime, setStartTime] = useState(new Date());
     const [showStartPicker, setShowStartPicker] = useState(false);
@@ -45,14 +51,64 @@ export default function WorkoutFormScreen(){
     const [showExerciseList, setShowExerciseList] = useState(false);
 
     const exerciseOptions= [
-        "근력 운동", "달리기", "요가/필라테스", "구기 종목", "무술", 
+        "근력 운동", "달리기", "필라테스", "구기 종목", "무술", 
         "재활 운동", "맨몸 운동", "크로스핏", "수영", "기타"
     ]
 
+    {/*칼로리 계산을 위한 변수*/}
+    const MET_VALUES: Record<string, number> = {
+        '근력 운동': 6.0,
+        '달리기': 8.0,
+        '필라테스': 3.0,
+        '구기 종목': 6.5,
+        '무술': 10.0,
+        '재활 운동': 3.5,
+        '맨몸 운동': 5.0,
+        '크로스핏': 8.0,
+        '수영': 7.0,
+    };
+
+    const normalize = (text: string) => {
+        return text.replace(/[^\p{L}\p{N}]/gu, '').trim();
+    };
+
+    const getWorkoutCategoryFromLabel = (label: string): WorkoutCategory => {
+        const entries = Object.entries(WorkoutCategory)
+            .filter(([key, value]) => typeof value === 'string') // 중요!!
+            .map(([key, value]) => [key, value as string] as [keyof typeof WorkoutCategory, string]);
+        
+        const normalizedLabel = normalize(label);
+
+        const found = entries.find(([_, value]) => {
+            console.log("🔍 비교 →", normalize(value), "vs", normalizedLabel);
+            return normalize(value) === normalizedLabel;
+        });
+        return found ? WorkoutCategory[found[0]] : WorkoutCategory.Other;
+    };
+
+
+    {/*칼로리 계산 변수*/}
+    const calculateCalories = (
+        start: Date,
+        end: Date,
+        exercise: string,
+        weight: number
+    ): number => {
+        const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+        console.log(durationMinutes);
+        const durationHours = durationMinutes / 60;
+        console.log("리스트비교:",normalize(exercise));
+        const MET = MET_VALUES[normalize(exercise)] ?? 4.0;
+        const cal = MET * weight * durationHours;
+
+        console.log("met: ", MET);
+        console.log("cal: ", cal);
+        return Math.round(cal);
+    };
 
     {/*이미지 저장*/}
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-
+    const ImgBttn = util_icons.empty_img;
     const handlePress = async () => {
         try {
             const result = await launchImageLibrary({
@@ -77,6 +133,24 @@ export default function WorkoutFormScreen(){
             console.error(error);
         }
 
+    };
+
+    {/*운동 종료 시 가장 가까운 날짜의 몸무게 찾기*/}
+    const getNearestWeight = (weightLogs: WeightLog[], targetDate: Date): number | null => {
+        if (!weightLogs || weightLogs.length === 0) return null;
+
+        let nearest = weightLogs[0];
+        let minDiff = Math.abs(targetDate.getTime() - nearest.day.getTime());
+
+        for (let i = 1; i < weightLogs.length; i++) {
+            const diff = Math.abs(targetDate.getTime() - weightLogs[i].day.getTime());
+            if (diff < minDiff) {
+            nearest = weightLogs[i];
+            minDiff = diff;
+            }
+        }
+
+        return nearest.weight;
     };
 
     return (
@@ -146,24 +220,55 @@ export default function WorkoutFormScreen(){
             
             {/*운동 사진*/}
             <Text style={styles.formtext}>운동 사진</Text>
-            <TouchableOpacity style={styles.imageinput} onPress={handlePress}>
+            <TouchableOpacity style={styles.imginput} onPress={handlePress}>
             {imageUrl ? (
                 <Image source={{uri: imageUrl}} 
-                       style={styles.imageinput}/>
+                       style={styles.imginput}/>
             ):(
-                <Text style={{fontSize: 50, textAlign: 'center'}}>📷</Text>
+                <ImgBttn/>
             )}
             </TouchableOpacity>
 
 
             </ScrollView>
 
-            {/*완료 버튼*/}
+           
             <View style={styles.row}>
+                 {/*닫기 버튼*/}
                 <TouchableOpacity style={styles.button1}>
                     <Text style={styles.buttonText1} onPress={() => navigation.navigate('Workout')}>닫기</Text> 
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button2}>
+                 {/*완료 버튼*/}
+                <TouchableOpacity 
+                    style={styles.button2}
+                    onPress={() => {
+                        const targetWeight = getNearestWeight(userData?.weightLogs || [], startTime) || 65; // 기본값 65
+
+                        console.log("몸무게:", targetWeight);
+                        const expectedCalory = calculateCalories(new Date(startTime), new Date(endTime), normalize(selectedExercise), targetWeight);
+                        const workoutId = Date.now().toString(); // or use uuid()
+                        console.log (startTime);
+
+                        const workoutCategory = getWorkoutCategoryFromLabel(selectedExercise);
+                        console.log(WorkoutCategory);
+
+                        const newWorkout = new Workout(
+                            workoutId,
+                            workoutCategory,
+                            startTime,
+                            endTime,
+                            expectedCalory,
+                            imageUrl ?? ''
+                        );
+                        
+                        console.log(newWorkout.workoutCategory);
+
+                        // 기존 workoutdata에 추가
+                        setWorkoutData([...workoutData, newWorkout]);
+                        
+                        navigation.navigate('Workout'); 
+                    }}>
+
                     <Text style={styles.buttonText2}>완료</Text> 
                 </TouchableOpacity>
             </View>
@@ -223,7 +328,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: '#ddd',
     },
-    imageinput: {
+    imginput: {
         borderWidth: 1,
         borderColor: '#ccc',
         marginBottom: 12,
@@ -232,6 +337,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 12,
         backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     row:{
         flexDirection: 'row',
