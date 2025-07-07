@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
+    Modal,
 } from "react-native";
 import { sendToGemini } from "../services/dietlog_api";
 import { launchImageLibrary } from "react-native-image-picker";
@@ -16,155 +17,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DietLogStackParamList } from "./dietlog_stack";
 import { DietLog, DietLogGroupByDate, APIResponse } from "../models/dietlog";
 
-const dummyData: DietLogGroupByDate = new DietLogGroupByDate();
-
-dummyData.addDietLog(
-    new DietLog(
-        "1",
-        new Date("2025-07-07T12:34:00"),
-        "https://cdn.oasis.co.kr:48581/product/88871/thumb/f9653bbb-3142-4224-baf6-ec37dbdafb68.jpg",
-        new APIResponse(
-            "닭가슴살 샐러드와 김치볶음밥",
-            {
-                totScore: 85,
-                protein: 5,
-                fat: 2,
-                carbo: 3,
-                dietaryFiber: 4,
-                vitMin: 5,
-                sodium: 2,
-            },
-            "건강한 식단입니다!"
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "2",
-        new Date("2025-07-07T12:56:00"),
-        "https://oasisprodproduct.edge.naverncp.com/94403/detail/4_e713f898-4b47-4d73-bfcd-651691cd95e6.jpg",
-        new APIResponse(
-            "김치찌개",
-            {
-                totScore: 60,
-                protein: 3,
-                fat: 3,
-                carbo: 3,
-                dietaryFiber: 2,
-                vitMin: 3,
-                sodium: 5,
-            },
-            "나트륨이 다소 높아요."
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "3",
-        new Date("2025-07-07T12:34:00"),
-        "https://cdn.oasis.co.kr:48581/product/88871/thumb/f9653bbb-3142-4224-baf6-ec37dbdafb68.jpg",
-        new APIResponse(
-            "닭가슴살 샐러드",
-            {
-                totScore: 85,
-                protein: 5,
-                fat: 2,
-                carbo: 3,
-                dietaryFiber: 4,
-                vitMin: 5,
-                sodium: 2,
-            },
-            "건강한 식단입니다!"
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "4",
-        new Date("2025-07-07T12:34:00"),
-        "https://cdn.oasis.co.kr:48581/product/88871/thumb/f9653bbb-3142-4224-baf6-ec37dbdafb68.jpg",
-        new APIResponse(
-            "닭가슴살 샐러드",
-            {
-                totScore: 85,
-                protein: 5,
-                fat: 2,
-                carbo: 3,
-                dietaryFiber: 4,
-                vitMin: 5,
-                sodium: 2,
-            },
-            "건강한 식단입니다!"
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "7",
-        new Date("2025-07-06T12:56:00"),
-        "https://oasisprodproduct.edge.naverncp.com/94403/detail/4_e713f898-4b47-4d73-bfcd-651691cd95e6.jpg",
-        new APIResponse(
-            "김치찌개",
-            {
-                totScore: 60,
-                protein: 3,
-                fat: 3,
-                carbo: 3,
-                dietaryFiber: 2,
-                vitMin: 3,
-                sodium: 5,
-            },
-            "나트륨이 다소 높아요."
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "7",
-        new Date("2025-07-03T12:56:00"),
-        "https://oasisprodproduct.edge.naverncp.com/94403/detail/4_e713f898-4b47-4d73-bfcd-651691cd95e6.jpg",
-        new APIResponse(
-            "김치찌개",
-            {
-                totScore: 60,
-                protein: 3,
-                fat: 3,
-                carbo: 3,
-                dietaryFiber: 2,
-                vitMin: 3,
-                sodium: 5,
-            },
-            "나트륨이 다소 높아요."
-        )
-    )
-);
-
-dummyData.addDietLog(
-    new DietLog(
-        "7",
-        new Date("2025-07-02T12:56:00"),
-        "https://oasisprodproduct.edge.naverncp.com/94403/detail/4_e713f898-4b47-4d73-bfcd-651691cd95e6.jpg",
-        new APIResponse(
-            "김치찌개",
-            {
-                totScore: 60,
-                protein: 3,
-                fat: 3,
-                carbo: 3,
-                dietaryFiber: 2,
-                vitMin: 3,
-                sodium: 5,
-            },
-            "나트륨이 다소 높아요."
-        )
-    )
-);
-
 const formatDate = (date: Date): string => {
     if (!(date instanceof Date)) {
         throw new Error("Invalid date object");
@@ -172,7 +24,11 @@ const formatDate = (date: Date): string => {
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const target = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
 
     const diff = (today.getTime() - target.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -181,12 +37,36 @@ const formatDate = (date: Date): string => {
     } else if (diff === 1) {
         return "어제";
     } else {
-        return date.toLocaleDateString('ko-KR');
+        return date.toLocaleDateString("ko-KR");
     }
+};
+
+const formatStar = (score: number): string => {
+    if (score < 0 || score > 5) {
+        throw new Error("Score must be between 0 and 100");
+    }
+
+    const fullStars = score;
+    const emptyStars = 5 - fullStars;
+
+    return "★".repeat(fullStars) + "☆".repeat(emptyStars);
 };
 
 const DietLogScreen = () => {
     const { dietLogData } = useData();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedDietLog, setselectedDietLog] = useState<DietLog | null>(
+        null
+    );
+    const openModal = (_dietLog: DietLog) => {
+        setselectedDietLog(_dietLog);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setselectedDietLog(null);
+    };
 
     const handlePress = async () => {
         try {
@@ -222,10 +102,12 @@ const DietLogScreen = () => {
         <View style={styles.container}>
             <Text style={styles.title}>식단 기록</Text>
             <ScrollView style={styles.content}>
-                {dummyData.isEmpty() ? (
-                    <Text style={styles.text}>식단 기록이 없습니다.</Text>
+                {dietLogData.isEmpty() ? (
+                    <View style={styles.card}>
+                        <Text style={{ margin: 20 }}> 식단 기록이 없습니다. </Text>
+                    </View>
                 ) : (
-                    Array.from(dummyData.dietLogs.entries()).map(
+                    Array.from(dietLogData.dietLogs.entries()).map(
                         ([date, logs]) => (
                             <View key={date} style={styles.card}>
                                 <Text style={styles.dateText}>
@@ -233,25 +115,132 @@ const DietLogScreen = () => {
                                 </Text>
                                 <View style={styles.imgCard}>
                                     {logs.map((log: DietLog) => (
-                                    <View key={log.dietLogId} style={styles.imgContainer}>
-                                        <Image
-                                            source={{ uri: log.foodImgUrl }}
-                                            style={styles.img}
-                                        />
-                                        <Text style={styles.imgName}>
-                                            {log.responseData.foodName}
-                                        </Text>
-                                        <Text style={styles.imgTime}>
-                                            {log.recordDate.toLocaleTimeString('ko-KR').slice(0, -3)}
-                                        </Text>
-                                    </View>
-                                ))}
+                                        <View
+                                            key={log.dietLogId}
+                                            style={styles.imgContainer}
+                                        >
+                                            <TouchableOpacity
+                                                onPress={() => openModal(log)}
+                                            >
+                                                <Image
+                                                    source={{
+                                                        uri: log.foodImgUrl,
+                                                    }}
+                                                    style={styles.img}
+                                                />
+                                            </TouchableOpacity>
+                                            <Text style={styles.imgName}>
+                                                {log.responseData.foodName}
+                                            </Text>
+                                            <Text style={styles.imgTime}>
+                                                {log.recordDate
+                                                    .toLocaleTimeString("ko-KR")
+                                                    .slice(0, -3)}
+                                            </Text>
+                                        </View>
+                                    ))}
                                 </View>
                             </View>
                         )
                     )
                 )}
             </ScrollView>
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        {selectedDietLog && (
+                            <>
+                                <TouchableOpacity
+                                    onPress={closeModal}
+                                    style={styles.modalCloseBtn}
+                                >
+                                    <Text style={styles.modalCloseText}>×</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.modalTitle}>
+                                    {selectedDietLog.responseData.foodName}
+                                </Text>
+                                {selectedDietLog.foodImgUrl && (
+                                    <Image
+                                        source={{
+                                            uri: selectedDietLog.foodImgUrl,
+                                        }}
+                                        style={styles.modalImage}
+                                    />
+                                )}
+                                <Text style={styles.modalDate}>
+                                    {formatDate(selectedDietLog.recordDate)}{" "}
+                                    {selectedDietLog.recordDate
+                                        .toLocaleTimeString("ko-KR")
+                                        .slice(0, -3)}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    탄수화물:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .carbo
+                                    )}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    단백질:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .protein
+                                    )}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    지방:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .fat
+                                    )}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    식이섬유:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .dietaryFiber
+                                    )}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    비타민/미네랄:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .vitMin
+                                    )}
+                                </Text>
+                                <Text style={styles.subScore}>
+                                    나트륨:{" "}
+                                    {formatStar(
+                                        selectedDietLog.responseData.foodScore
+                                            .sodium
+                                    )}
+                                </Text>
+                                <Text style={styles.totScore}>
+                                    총점:{" "}
+                                    <Text style={{ fontWeight: "bold" }}>
+                                        {
+                                            selectedDietLog.responseData
+                                                .foodScore.totScore
+                                        }
+                                        점
+                                    </Text>
+                                </Text>
+                                <View style={styles.commentBox}>
+                                    <Text style={styles.commentText}>
+                                        {selectedDietLog.responseData.comment ||
+                                            "코멘트가 없습니다."}
+                                    </Text>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() => navigation.navigate("DietLogFormScreen")}
@@ -308,8 +297,8 @@ const styles = StyleSheet.create({
     },
     imgCard: {
         flexDirection: "row",
-        flexWrap: 'wrap',     // Allow items to wrap to the next line
-        justifyContent: 'flex-start', 
+        flexWrap: "wrap", // Allow items to wrap to the next line
+        justifyContent: "flex-start",
     },
     imgContainer: {
         shadowColor: "#000",
@@ -330,7 +319,70 @@ const styles = StyleSheet.create({
     imgTime: {
         fontSize: 12,
         color: "#888",
-    }
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContent: {
+        width: "80%",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 12,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    modalImage: {
+        width: 200,
+        height: 200,
+        marginVertical: 10,
+        borderRadius: 10,
+    },
+    modalCloseBtn: {
+        position: "absolute",
+        top: 10,
+        right: 20,
+        zIndex: 1,
+    },
+    modalCloseText: {
+        fontSize: 25,
+    },
+    subScore: {
+        fontSize: 14,
+        color: "#333",
+        marginBottom: 2,
+    },
+    modalDate: {
+        fontSize: 16,
+        color: "#666",
+        marginBottom: 20,
+    },
+    totScore: {
+        fontSize: 25,
+        margin: 30,
+    },
+    commentBox: {
+        backgroundColor: "#f0f0f0",
+        borderRadius: 8,
+        marginTop: 10,
+        width: "90%",
+        alignItems: "center",
+        paddingVertical: 15,
+        marginBottom: 20,
+    },
+    commentText: {
+        fontSize: 15,
+        fontWeight: "bold",
+        color: "#8285FB",
+        textAlign: "center",
+        paddingHorizontal: 10,
+    },
 });
 
 export default DietLogScreen;
