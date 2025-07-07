@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useData } from '../DataContext';
 
 interface AppBarProps {
     title: string;
 }
 
 const AppBar: React.FC<AppBarProps> = ({ title }) => {
+    const { userData } = useData();
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>FitLog</Text>
-            {title !== "프로필" && <Text style={styles.name}>이중권님</Text>}
+            {title !== "프로필" && <Text style={styles.name}>{userData?.username}</Text>}
         </View>
     );
 };
