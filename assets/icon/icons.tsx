@@ -26,5 +26,5 @@ export const tab_icons = {
 export const util_icons = {
     cam: CAM,
     empty_img: EMPTY_IMG,
-    profile: PROFILE
+    profile: PROFILE,
 }

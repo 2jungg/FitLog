@@ -86,13 +86,9 @@ export default function ProfileScreen(){
     const handleRegisterBodyData = () => {
         if (!userData) return;
 
+
         const numericHeight = parseInt(height.replace(/[^0-9]/g, ''));
         const numericWeight = parseFloat(weight.replace(/[^0-9.]/g, ''));
-
-        if (isNaN(numericHeight) || isNaN(numericWeight) || numericHeight <= 0 || numericWeight <= 0) {
-            Alert.alert("입력 오류", "유효한 키와 몸무게를 입력해주세요.");
-            return;
-        }
 
         const today = new Date();
         const newLog: WeightLog = {
@@ -118,15 +114,14 @@ export default function ProfileScreen(){
                 userData.myGoal
             );
 
-            updateUserData(updatedUser);
+        updateUserData(updatedUser);
 
-            if (logsChanged) {
-                Alert.alert("등록 완료", "오늘의 신체 데이터가 등록되었습니다.");
-            } else {
-                Alert.alert("중복 등록", "이미 오늘 등록한 데이터가 있습니다.");
-            }
-        }
-    };
+        if (logsChanged) {
+        Alert.alert("등록 완료", "오늘의 신체 데이터가 등록되었습니다.");
+        }  else {
+        Alert.alert("중복 등록", "이미 오늘 등록한 데이터가 있습니다.");
+        }}
+      };
 
     return (
         <View style={styles.container}>
@@ -175,7 +170,7 @@ export default function ProfileScreen(){
                 </TouchableOpacity>
             </View>
             {/*그래프 그리기*/}
-            {activeTab === 'weight' && userData?.weightLogs && userData.weightLogs.length > 0 ? (
+            {activeTab === 'weight' && userData?.weightLogs && (
             <LineChart
                 data={{
                     labels: labels,
@@ -207,26 +202,14 @@ export default function ProfileScreen(){
                 getDotColor={()=>'#8285fb'}
                 verticalLabelRotation={-15}
                 />
-            ) : (
-                <View style={styles.noDataContainer}>
-                    <Text style={styles.noDataText}>기록된 몸무게 데이터가 없습니다.</Text>
-                </View>
             )}
-            {activeTab === 'BMI' && userData?.weightLogs && userData.weightLogs.length > 0 ? (
-                <View style={{padding: 20}}>
-                    {sortedLogs.map((log, index) => {
-                        if (!userData.height) return null;
-                        const bmiValue = (log.weight / ((userData.height / 100) ** 2)).toFixed(1);
-                        return (
-                            <Text key={index} style={{textAlign: 'center', paddingVertical: 2}}>
-                                {log.day.toLocaleDateString('ko-KR')} - BMI: {bmiValue}
-                            </Text>
-                        )
-                    })}
-                </View>
-            ) : (
-                <View style={styles.noDataContainer}>
-                    <Text style={styles.noDataText}>기록된 데이터가 없습니다.</Text>
+            {activeTab === 'BMI' && userData?.weightLogs && (
+                <View>
+                    {userData.weightLogs.map((log, index) => (
+                    <Text key={index}>
+                        {log.day.toLocaleDateString('ko-KR')} - {log.weight}kg
+                    </Text>
+                    ))}
                 </View>
             )}
         </View>
@@ -321,13 +304,5 @@ const styles = StyleSheet.create({
     inactiveText: {
         color: '#aaa',
     },
-    noDataContainer: {
-        height: 220,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    noDataText: {
-        color: '#aaa',
-        fontSize: 16,
-    },
 });
+
