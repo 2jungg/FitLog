@@ -10,7 +10,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
     const { userData } = useData();
 
     return (
-        <View style={styles.container}>
+        <View style={styles.appBar}>
             <Text style={styles.title}>FitLog</Text>
             {title !== "프로필" && <Text style={styles.name}>{userData?.username} 님</Text>}
         </View>
@@ -18,6 +18,22 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
 };
 
 const styles = StyleSheet.create({
+    appBar: {
+        height: 70,
+        backgroundColor: "#fff",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderTopWidth: 0,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 10,
+    },
     container: {
         height: 70 ,
         backgroundColor: "#fff",

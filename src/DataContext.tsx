@@ -1,51 +1,117 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Profile, WeightLog } from './models/profile';
-import { DietLogGroupByDate } from './models/dietlog';
-import { Workout, WorkoutCategory } from './models/workout';
+import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import { Profile } from './models/profile';
+import { DietLog, DietLogGroupByDate } from './models/dietlog';
+import { Workout } from './models/workout';
+import * as db from './services/db_service';
 
 interface DataContextType {
     userData: Profile | null;
-    setUserData: (data: Profile | null) => void;
     dietLogData: DietLogGroupByDate;
-    setDietLogData: (data: DietLogGroupByDate) => void;
     workoutData: Workout[];
-    setWorkoutData: (data: Workout[]) => void;
+    loading: boolean;
+    updateUserData: (newProfileData: Profile) => void;
+    addDietLog: (newDietLog: DietLog) => void;
+    deleteDietLog: (dietLogId: string) => void;
+    addWorkout: (newWorkout: Workout) => void;
+    updateWorkout: (updatedWorkout: Workout) => void;
+    deleteWorkout: (workoutId: string) => void;
 }
-
-const dummyWorkoutData: Workout[] = [
-    new Workout(
-        '1',
-        WorkoutCategory.StrengthTraining,
-        new Date('2025-07-04T16:00:00'),
-        new Date('2025-07-04T18:00:00'),
-        300,
-        'https://m.health.chosun.com/site/data/img_dir/2024/10/16/2024101602160_0.jpg'
-    ),
-    new Workout(
-        '2',
-        WorkoutCategory.Running,
-        new Date('2025-07-04T23:30:00'),
-        new Date('2025-07-05T1:00:00'),
-        300,
-        'https://m.health.chosun.com/site/data/img_dir/2024/10/16/2024101602160_0.jpg'
-    ),
-];
-
-const initialWeightLogs: WeightLog[] = [
-  { day: new Date('2024-07-01'), weight: 70},
-  { day: new Date('2024-07-03'), weight: 72},
-  { day: new Date('2024-07-06'), weight: 78},
-];
 
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
-    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권', 180, initialWeightLogs, "BMI 정상으로 가보자!!"));
+    const [userData, setUserData] = useState<Profile | null>(null);
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
-    const [workoutData, setWorkoutData] = useState<Workout[]>(dummyWorkoutData);
+    const [workoutData, setWorkoutData] = useState<Workout[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = () => {
+            const profile = db.getProfile();
+            if (!profile) {
+                // 프로필이 없으면 기본 프로필 생성 및 저장
+                const defaultProfile = new Profile('이중권', 180, [], "BMI 정상으로 가보자!!");
+                db.saveProfile(defaultProfile);
+                setUserData(defaultProfile);
+            } else {
+                setUserData(profile);
+            }
+            setDietLogData(db.getAllDietLogsAsGroup());
+            setWorkoutData(db.getAllWorkouts());
+            setLoading(false);
+        };
+        loadData();
+    }, []);
+
+    const handleUpdateUserData = (newProfileData: Profile) => {
+        setUserData(newProfileData);
+        db.saveProfile(newProfileData);
+    };
+
+    const handleAddDietLog = (newDietLog: DietLog) => {
+        const newData = new DietLogGroupByDate();
+        newData.dietLogs = new Map(dietLogData.dietLogs);
+        newData.addDietLog(newDietLog);
+        
+        setDietLogData(newData);
+        
+        const allLogs: DietLog[] = Array.from(newData.dietLogs.values()).flat();
+        db.saveAllDietLogs(allLogs);
+    };
+
+    const handleDeleteDietLog = (dietLogId: string) => {
+        const newDietLogData = new DietLogGroupByDate();
+        
+        dietLogData.dietLogs.forEach((logs, date) => {
+            const filteredLogs = logs.filter(log => log.dietLogId !== dietLogId);
+            if (filteredLogs.length > 0) {
+                newDietLogData.dietLogs.set(date, filteredLogs);
+            }
+        });
+
+        setDietLogData(newDietLogData);
+
+        const allLogs: DietLog[] = Array.from(newDietLogData.dietLogs.values()).flat();
+        db.saveAllDietLogs(allLogs);
+    };
+
+    const handleAddWorkout = (newWorkout: Workout) => {
+        const newWorkouts = [newWorkout, ...workoutData];
+        setWorkoutData(newWorkouts);
+        db.addWorkout(newWorkout); // db_service의 addWorkout은 내부적으로 전체를 다시 저장합니다.
+    };
+
+    const handleUpdateWorkout = (updatedWorkout: Workout) => {
+        const newWorkouts = workoutData.map(w => w.workoutId === updatedWorkout.workoutId ? updatedWorkout : w);
+        setWorkoutData(newWorkouts);
+        db.updateWorkout(updatedWorkout);
+    };
+
+    const handleDeleteWorkout = (workoutId: string) => {
+        const newWorkouts = workoutData.filter(w => w.workoutId !== workoutId);
+        setWorkoutData(newWorkouts);
+        db.deleteWorkout(workoutId);
+    };
+
+    const value = {
+        userData,
+        dietLogData,
+        workoutData,
+        loading,
+        updateUserData: handleUpdateUserData,
+        addDietLog: handleAddDietLog,
+        deleteDietLog: handleDeleteDietLog,
+        addWorkout: handleAddWorkout,
+        updateWorkout: handleUpdateWorkout,
+        deleteWorkout: handleDeleteWorkout,
+    };
+
+    if (loading) {
+        return null;
+    }
 
     return (
-        <DataContext.Provider value={{ userData, setUserData, dietLogData, setDietLogData, workoutData, setWorkoutData }}>
+        <DataContext.Provider value={value}>
             {children}
         </DataContext.Provider>
     );

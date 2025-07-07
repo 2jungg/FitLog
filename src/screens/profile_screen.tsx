@@ -16,7 +16,7 @@ import { Profile, WeightLog } from "../models/profile";
 
 export default function ProfileScreen(){
     
-    const { userData, setUserData } = useData();
+    const { userData, updateUserData } = useData();
     const ProfileBttn = util_icons.profile;   
 
     {/*몸무게 변화 기록*/}
@@ -114,7 +114,7 @@ export default function ProfileScreen(){
                 userData.myGoal
             );
 
-        setUserData(updatedUser);
+        updateUserData(updatedUser);
 
         if (logsChanged) {
         Alert.alert("등록 완료", "오늘의 신체 데이터가 등록되었습니다.");
@@ -304,4 +304,4 @@ const styles = StyleSheet.create({
     inactiveText: {
         color: '#aaa',
     },
-});
+})};

@@ -28,7 +28,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 export default function WorkoutFormScreen(){
     const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
     
-    const {userData, workoutData, setWorkoutData}  = useData();
+    const {userData, workoutData, addWorkout}  = useData();
 
     {/*시간 설정 변수*/}
     const [startTime, setStartTime] = useState(new Date());
@@ -259,7 +259,7 @@ export default function WorkoutFormScreen(){
                         console.log(newWorkout.workoutCategory);
 
                         // 기존 workoutdata에 추가
-                        setWorkoutData([...workoutData, newWorkout]);
+                        addWorkout(newWorkout);
                         
                         navigation.navigate('Workout'); 
                     }}>

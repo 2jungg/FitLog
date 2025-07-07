@@ -42,18 +42,23 @@ export class DietLog implements IDietLog {
 }
 
 interface DietLogsGroupByDate {
-    dietLogs: Map<Date, DietLog[]>;
+    dietLogs: Map<string, DietLog[]>;
     addDietLog(dietLog: DietLog): void;
+    isEmpty(): boolean;
 }
 
 export class DietLogGroupByDate implements DietLogsGroupByDate {
-    dietLogs: Map<Date, DietLog[]> = new Map();
+    dietLogs: Map<string, DietLog[]> = new Map();
 
     addDietLog(dietLog: DietLog): void {
-        const dateKey = dietLog.recordDate
+        const dateKey = dietLog.recordDate.toISOString().split('T')[0];
         if (!this.dietLogs.has(dateKey)) {
             this.dietLogs.set(dateKey, []);
         }
-        this.dietLogs.get(dateKey)?.push(dietLog);
+        this.dietLogs.get(dateKey)?.unshift(dietLog);
+    }
+
+    isEmpty(): boolean {
+        return this.dietLogs.size === 0;
     }
 }
