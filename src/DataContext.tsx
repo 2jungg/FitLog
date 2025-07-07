@@ -4,8 +4,8 @@ import { DietLogGroupByDate } from './models/dietlog';
 import { Workout, WorkoutCategory } from './models/workout';
 
 interface DataContextType {
-    userData: Profile | null;
-    setUserData: (data: Profile | null) => void;
+    userData: Profile;
+    setUserData: (data: Profile) => void;
     dietLogData: DietLogGroupByDate;
     setDietLogData: (data: DietLogGroupByDate) => void;
     workoutData: Workout[];
