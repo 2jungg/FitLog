@@ -107,7 +107,7 @@ export default function WorkoutScreen(){
                         {selectedWorkout && (
                             <>
                                 <TouchableOpacity onPress={closeModal} style={styles.modalCloseBtn}>
-                                    <Text style={styles.modalCloseText}>X</Text>
+                                    <Text style={styles.modalCloseText}>×</Text>
                                 </TouchableOpacity>
                                 <Text style={styles.modalTitle}>운동 상세 정보</Text>
                                 {selectedWorkout.workoutImgUrl && (
@@ -211,11 +211,11 @@ const styles= StyleSheet.create({
     },
     modalCloseBtn: {
         position: 'absolute',
-        top: 20,
+        top: 10,
         right: 20,
         zIndex: 1,
     },
     modalCloseText: {
-        fontSize: 20
+        fontSize: 25
     }
 });

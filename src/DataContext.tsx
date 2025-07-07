@@ -32,14 +32,15 @@ const dummyWorkoutData: Workout[] = [
 ];
 
 const initialWeightLogs: WeightLog[] = [
-  { day: new Date('2024-07-01'), weight: 70 },
-  { day: new Date('2024-07-07'), weight: 72 }
+  { day: new Date('2024-07-01'), weight: 70},
+  { day: new Date('2024-07-03'), weight: 72},
+  { day: new Date('2024-07-06'), weight: 78},
 ];
 
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
-    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, initialWeightLogs));
+    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권', 180, initialWeightLogs, "BMI 정상으로 가보자!!"));
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
     const [workoutData, setWorkoutData] = useState<Workout[]>(dummyWorkoutData);
 

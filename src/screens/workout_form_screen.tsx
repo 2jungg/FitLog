@@ -80,7 +80,6 @@ export default function WorkoutFormScreen(){
         const normalizedLabel = normalize(label);
 
         const found = entries.find(([_, value]) => {
-            console.log("🔍 비교 →", normalize(value), "vs", normalizedLabel);
             return normalize(value) === normalizedLabel;
         });
         return found ? WorkoutCategory[found[0]] : WorkoutCategory.Other;
@@ -95,9 +94,7 @@ export default function WorkoutFormScreen(){
         weight: number
     ): number => {
         const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-        console.log(durationMinutes);
         const durationHours = durationMinutes / 60;
-        console.log("리스트비교:",normalize(exercise));
         const MET = MET_VALUES[normalize(exercise)] ?? 4.0;
         const cal = MET * weight * durationHours;
 
@@ -228,8 +225,6 @@ export default function WorkoutFormScreen(){
                 <ImgBttn/>
             )}
             </TouchableOpacity>
-
-
             </ScrollView>
 
            
