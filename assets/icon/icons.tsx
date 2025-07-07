@@ -6,6 +6,7 @@ import WO_BLACK from './workout_icon_black.svg';
 import WO_COLOR from './workout_icon_color.svg';
 import CAM from './cam.svg';
 import EMPTY_IMG from './empty_img.svg';
+import PROFILE from './profile.svg';
 
 export const tab_icons = {
     diet: {
@@ -25,4 +26,5 @@ export const tab_icons = {
 export const util_icons = {
     cam: CAM,
     empty_img: EMPTY_IMG,
+    profile: PROFILE,
 }

@@ -21,7 +21,7 @@ import { DietLog, DietLogGroupByDate } from "../models/dietlog";
 import uuid from "react-native-uuid";
 
 const DietLogFormScreen = () => {
-    const { dietLogData, setDietLogData } = useData();
+    const { dietLogData, addDietLog } = useData();
     const navigation = useNavigation<NativeStackNavigationProp<DietLogStackParamList>>();
     const [foodTime, setFoodTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
@@ -81,6 +81,7 @@ const DietLogFormScreen = () => {
                         onCancel={() => setShowTimePicker(false)}
                         locale="ko_KR"
                         is24Hour={true}
+                        timeZoneName={"Asia/Seoul"}
                     />
                 )}
 
@@ -132,10 +133,7 @@ const DietLogFormScreen = () => {
                                     imageUrl,
                                     response
                                 );
-                                const newData = new DietLogGroupByDate();
-                                newData.dietLogs = new Map(dietLogData.dietLogs);
-                                newData.addDietLog(newLog);
-                                setDietLogData(newData);
+                                addDietLog(newLog);
                                 console.log("식단 정보 저장 완료:", dietLogData);
                                 navigation.navigate("DietLog");
                             })

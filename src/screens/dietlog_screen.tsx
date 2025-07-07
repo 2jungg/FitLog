@@ -53,7 +53,7 @@ const formatStar = (score: number): string => {
 };
 
 const DietLogScreen = () => {
-    const { dietLogData } = useData();
+    const { dietLogData, deleteDietLog } = useData();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDietLog, setselectedDietLog] = useState<DietLog | null>(
         null
@@ -66,32 +66,6 @@ const DietLogScreen = () => {
     const closeModal = () => {
         setModalVisible(false);
         setselectedDietLog(null);
-    };
-
-    const handlePress = async () => {
-        try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
-
-            if (result.didCancel) {
-                console.log("User cancelled image picker");
-            } else if (result.errorCode) {
-                console.log("ImagePicker Error: ", result.errorMessage);
-            } else if (result.assets && result.assets.length > 0) {
-                const asset = result.assets[0];
-                if (asset.base64 && asset.type) {
-                    const response = await sendToGemini(
-                        asset.base64,
-                        asset.type
-                    );
-                    console.log("Gemini API Response:", response);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
     };
 
     const navigation =
@@ -107,8 +81,9 @@ const DietLogScreen = () => {
                         <Text style={{ margin: 20 }}> 식단 기록이 없습니다. </Text>
                     </View>
                 ) : (
-                    Array.from(dietLogData.dietLogs.entries()).map(
-                        ([date, logs]) => (
+                    Array.from(dietLogData.dietLogs.entries())
+                        .sort(([a], [b]) => b.localeCompare(a)) // Descending order by date string
+                        .map(([date, logs]) => (
                             <View key={date} style={styles.card}>
                                 <Text style={styles.dateText}>
                                     {formatDate(new Date(date))}
@@ -160,6 +135,15 @@ const DietLogScreen = () => {
                                     style={styles.modalCloseBtn}
                                 >
                                     <Text style={styles.modalCloseText}>×</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.delBtnText}
+                                    onPress={() => {
+                                        deleteDietLog(selectedDietLog.dietLogId);
+                                        closeModal();
+                                    }}
+                                >
+                                    <Text>삭제</Text>
                                 </TouchableOpacity>
                                 <Text style={styles.modalTitle}>
                                     {selectedDietLog.responseData.foodName}
@@ -275,16 +259,16 @@ const styles = StyleSheet.create({
         color: "#333",
         marginLeft: 10,
     },
-    fab: {
-        position: "absolute",
-        bottom: 64,
+    fab:{
+        position: 'absolute',
+        bottom: 40,
         right: 24,
-        backgroundColor: "#8285FB",
+        backgroundColor: '#8285FB',
         width: 48,
         height: 48,
         borderRadius: 24,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         elevation: 6,
     },
     card: {
@@ -352,6 +336,22 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 25,
+    },
+    modalDelBtn: {
+        position: "absolute",
+        top: 10,
+        right: 20,
+        zIndex: 1,
+    },
+    delBtnText: {
+        fontSize: 5,
+        color: "#333",
+        position: "absolute",
+        top: 10,
+        left: 20,
+        zIndex: 1,
+        textAlign: "left",
+        marginTop: 10,
     },
     subScore: {
         fontSize: 14,

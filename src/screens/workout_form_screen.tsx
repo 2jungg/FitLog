@@ -24,11 +24,12 @@ import { Profile, WeightLog } from "../models/profile";
 import { util_icons } from "../../assets/icon/icons";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import uuid from "react-native-uuid";
 
 export default function WorkoutFormScreen(){
     const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
     
-    const {userData, workoutData, setWorkoutData}  = useData();
+    const {userData, workoutData, addWorkout}  = useData();
 
     {/*시간 설정 변수*/}
     const [startTime, setStartTime] = useState(new Date());
@@ -80,7 +81,6 @@ export default function WorkoutFormScreen(){
         const normalizedLabel = normalize(label);
 
         const found = entries.find(([_, value]) => {
-            console.log("🔍 비교 →", normalize(value), "vs", normalizedLabel);
             return normalize(value) === normalizedLabel;
         });
         return found ? WorkoutCategory[found[0]] : WorkoutCategory.Other;
@@ -95,9 +95,7 @@ export default function WorkoutFormScreen(){
         weight: number
     ): number => {
         const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-        console.log(durationMinutes);
         const durationHours = durationMinutes / 60;
-        console.log("리스트비교:",normalize(exercise));
         const MET = MET_VALUES[normalize(exercise)] ?? 4.0;
         const cal = MET * weight * durationHours;
 
@@ -228,8 +226,6 @@ export default function WorkoutFormScreen(){
                 <ImgBttn/>
             )}
             </TouchableOpacity>
-
-
             </ScrollView>
 
            
@@ -246,7 +242,7 @@ export default function WorkoutFormScreen(){
 
                         console.log("몸무게:", targetWeight);
                         const expectedCalory = calculateCalories(new Date(startTime), new Date(endTime), normalize(selectedExercise), targetWeight);
-                        const workoutId = Date.now().toString(); // or use uuid()
+                        const workoutId = "DL_" + uuid.v4() as string;
                         console.log (startTime);
 
                         const workoutCategory = getWorkoutCategoryFromLabel(selectedExercise);
@@ -264,7 +260,7 @@ export default function WorkoutFormScreen(){
                         console.log(newWorkout.workoutCategory);
 
                         // 기존 workoutdata에 추가
-                        setWorkoutData([...workoutData, newWorkout]);
+                        addWorkout(newWorkout);
                         
                         navigation.navigate('Workout'); 
                     }}>
