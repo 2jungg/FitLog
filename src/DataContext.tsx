@@ -39,7 +39,7 @@ const initialWeightLogs: WeightLog[] = [
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
-    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, initialWeightLogs));
+    const [userData, setUserData] = useState<Profile>(new Profile('이중권님', 180, initialWeightLogs));
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
     const [workoutData, setWorkoutData] = useState<Workout[]>(dummyWorkoutData);
 

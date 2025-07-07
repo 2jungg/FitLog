@@ -55,7 +55,7 @@ export class DietLogGroupByDate implements DietLogsGroupByDate {
         if (!this.dietLogs.has(dateKey)) {
             this.dietLogs.set(dateKey, []);
         }
-        this.dietLogs.get(dateKey)?.push(dietLog);
+        this.dietLogs.get(dateKey)?.unshift(dietLog);
     }
 
     isEmpty(): boolean {
