@@ -40,3 +40,20 @@ export class DietLog implements IDietLog {
         public responseData: APIResponse,
     ) {}
 }
+
+interface DietLogsGroupByDate {
+    dietLogs: Map<Date, DietLog[]>;
+    addDietLog(dietLog: DietLog): void;
+}
+
+export class DietLogGroupByDate implements DietLogsGroupByDate {
+    dietLogs: Map<Date, DietLog[]> = new Map();
+
+    addDietLog(dietLog: DietLog): void {
+        const dateKey = dietLog.recordDate
+        if (!this.dietLogs.has(dateKey)) {
+            this.dietLogs.set(dateKey, []);
+        }
+        this.dietLogs.get(dateKey)?.push(dietLog);
+    }
+}
