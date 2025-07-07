@@ -81,6 +81,7 @@ const DietLogFormScreen = () => {
                         onCancel={() => setShowTimePicker(false)}
                         locale="ko_KR"
                         is24Hour={true}
+                        timeZoneName={"Asia/Seoul"}
                     />
                 )}
 

@@ -51,7 +51,11 @@ export class DietLogGroupByDate implements DietLogsGroupByDate {
     dietLogs: Map<string, DietLog[]> = new Map();
 
     addDietLog(dietLog: DietLog): void {
-        const dateKey = dietLog.recordDate.toISOString().split('T')[0];
+        const year = dietLog.recordDate.getFullYear();
+        const month = (dietLog.recordDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = dietLog.recordDate.getDate().toString().padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+
         if (!this.dietLogs.has(dateKey)) {
             this.dietLogs.set(dateKey, []);
         }

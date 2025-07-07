@@ -1,6 +1,7 @@
 export interface WeightLog {
     day: Date;
     weight: number;     // kg unit
+    bmi: number;
 }
 
 interface IProfile {

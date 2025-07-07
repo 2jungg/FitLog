@@ -53,7 +53,7 @@ const formatStar = (score: number): string => {
 };
 
 const DietLogScreen = () => {
-    const { dietLogData } = useData();
+    const { dietLogData, deleteDietLog } = useData();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDietLog, setselectedDietLog] = useState<DietLog | null>(
         null
@@ -160,6 +160,15 @@ const DietLogScreen = () => {
                                     style={styles.modalCloseBtn}
                                 >
                                     <Text style={styles.modalCloseText}>×</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.delBtnText}
+                                    onPress={() => {
+                                        deleteDietLog(selectedDietLog.dietLogId);
+                                        closeModal();
+                                    }}
+                                >
+                                    <Text>삭제</Text>
                                 </TouchableOpacity>
                                 <Text style={styles.modalTitle}>
                                     {selectedDietLog.responseData.foodName}
@@ -352,6 +361,22 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 25,
+    },
+    modalDelBtn: {
+        position: "absolute",
+        top: 10,
+        right: 20,
+        zIndex: 1,
+    },
+    delBtnText: {
+        fontSize: 5,
+        color: "#333",
+        position: "absolute",
+        top: 10,
+        left: 20,
+        zIndex: 1,
+        textAlign: "left",
+        marginTop: 10,
     },
     subScore: {
         fontSize: 14,

@@ -24,6 +24,7 @@ import { Profile, WeightLog } from "../models/profile";
 import { util_icons } from "../../assets/icon/icons";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import uuid from "react-native-uuid";
 
 export default function WorkoutFormScreen(){
     const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
@@ -241,7 +242,7 @@ export default function WorkoutFormScreen(){
 
                         console.log("몸무게:", targetWeight);
                         const expectedCalory = calculateCalories(new Date(startTime), new Date(endTime), normalize(selectedExercise), targetWeight);
-                        const workoutId = Date.now().toString(); // or use uuid()
+                        const workoutId = "DL_" + uuid.v4() as string;
                         console.log (startTime);
 
                         const workoutCategory = getWorkoutCategoryFromLabel(selectedExercise);

@@ -25,26 +25,6 @@ export default function ProfileScreen(){
 
     //날짜와 몸무게 추출
     const sortedLogs = [...(userData?.weightLogs ?? [])].sort((a, b) => a.day.getTime() - b.day.getTime());
-    const labels = sortedLogs.map(log => log.day.toLocaleDateString('ko-KR').slice(5));
-    console.log(labels);
-    const weights = sortedLogs.map(log => log.weight);
-    console.log(weights);
-
-    const minWeight = Math.min(...weights);
-    const maxWeight = Math.max(...weights);
-
-    // 진짜 데이터
-    const realDataset = {
-    data: weights,
-    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`, // 보이는 선
-    };
-
-    // 가짜 데이터: 범위 확보용
-    const paddingDataset = {
-    data: [minWeight - 10, maxWeight + 10],
-    withDots: false, // 점 표시 X
-    color: () => `rgba(0, 0, 0, 0)`, // 선도 안 보이게
-    };
 
     // 최근 신체 데이터 출력
     const [height, setHeight] = useState(userData?.height?.toString() + "cm" || "000cm");
@@ -86,15 +66,15 @@ export default function ProfileScreen(){
     const handleRegisterBodyData = () => {
         if (!userData) return;
 
-
         const numericHeight = parseInt(height.replace(/[^0-9]/g, ''));
         const numericWeight = parseFloat(weight.replace(/[^0-9.]/g, ''));
 
         const today = new Date();
         const newLog: WeightLog = {
             day: today,
-            weight: numericWeight
-        };        
+            weight: numericWeight,
+            bmi: parseFloat(bmi.replace(/[^0-9.]/g, ''))
+        };
 
         // 기존 weight log와 비교하여 중복 여부 판단
         const exists = userData.checkWeightLogExists(newLog);
@@ -170,47 +150,99 @@ export default function ProfileScreen(){
                 </TouchableOpacity>
             </View>
             {/*그래프 그리기*/}
-            {activeTab === 'weight' && userData?.weightLogs && (
-            <LineChart
-                data={{
-                    labels: labels,
-                    datasets: [realDataset, paddingDataset],
-                }}
-                width={screenWidth - 40}
-                height={220}
-                fromZero={false}
-                withShadow={false}
-                yAxisSuffix="kg"
-                yAxisInterval={1}
-                segments={5} // y축 선 개수
-                chartConfig={{
-                    backgroundColor: '#fff',
-                    backgroundGradientFrom: '#fff',
-                    backgroundGradientTo: '#fff',
-                    decimalPlaces: 1,
-                    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
-                    labelColor: () => '#333',
-                    propsForDots: {
-                    r: '5',
-                    },
-                }}
-                style={{
-                    marginVertical: 8,
-                    borderRadius: 16,
-                    alignSelf: 'center',
-                }}
-                getDotColor={()=>'#8285fb'}
-                verticalLabelRotation={-15}
-                />
-            )}
-            {activeTab === 'BMI' && userData?.weightLogs && (
-                <View>
-                    {userData.weightLogs.map((log, index) => (
-                    <Text key={index}>
-                        {log.day.toLocaleDateString('ko-KR')} - {log.weight}kg
+            {(!userData?.weightLogs || userData.weightLogs.length === 0) ? (
+                <View style={styles.noDataContainer}>
+                    <Text style={styles.noDataText}>
+                        {activeTab === 'weight' ? '기록된 몸무게 데이터가 없습니다.' : '기록된 BMI 데이터가 없습니다.'}
                     </Text>
-                    ))}
                 </View>
+            ) : (
+                <>
+                    {activeTab === 'weight' && (() => {
+                        const labels = sortedLogs.map(log => log.day.toLocaleDateString('ko-KR').slice(5));
+                        const weights = sortedLogs.map(log => log.weight);
+                        const minWeight = Math.min(...weights);
+                        const maxWeight = Math.max(...weights);
+                        const realDataset = {
+                            data: weights,
+                            color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                        };
+                        const paddingDataset = {
+                            data: [minWeight - 10, maxWeight + 10],
+                            withDots: false,
+                            color: () => `rgba(0, 0, 0, 0)`,
+                        };
+                        return (
+                            <LineChart
+                                data={{
+                                    labels: labels,
+                                    datasets: [realDataset, paddingDataset],
+                                }}
+                                width={screenWidth - 40}
+                                height={220}
+                                fromZero={false}
+                                withShadow={false}
+                                yAxisSuffix="kg"
+                                yAxisInterval={1}
+                                segments={5}
+                                chartConfig={{
+                                    backgroundColor: '#fff',
+                                    backgroundGradientFrom: '#fff',
+                                    backgroundGradientTo: '#fff',
+                                    decimalPlaces: 1,
+                                    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                                    labelColor: () => '#333',
+                                    propsForDots: { r: '5' },
+                                }}
+                                style={{ marginVertical: 8, borderRadius: 16, alignSelf: 'center' }}
+                                getDotColor={() => '#8285fb'}
+                                verticalLabelRotation={-15}
+                            />
+                        );
+                    })()}
+                    {activeTab === 'BMI' && (() => {
+                        const labels = sortedLogs.map(log => log.day.toLocaleDateString('ko-KR').slice(5));
+                        const bmiValues = sortedLogs.map(log => log.bmi);
+                        const minBmi = Math.min(...bmiValues);
+                        const maxBmi = Math.max(...bmiValues);
+                        const realDatasetForBMI = {
+                            data: bmiValues,
+                            color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                        };
+                        const paddingDatasetForBMI = {
+                            data: [minBmi - 2, maxBmi + 2],
+                            withDots: false,
+                            color: () => `rgba(0, 0, 0, 0)`,
+                        };
+                        return (
+                            <LineChart
+                                data={{
+                                    labels: labels,
+                                    datasets: [realDatasetForBMI, paddingDatasetForBMI],
+                                }}
+                                width={screenWidth - 40}
+                                height={220}
+                                fromZero={false}
+                                withShadow={false}
+                                yAxisSuffix=""
+                                yAxisInterval={1}
+                                segments={5}
+                                chartConfig={{
+                                    backgroundColor: '#fff',
+                                    backgroundGradientFrom: '#fff',
+                                    backgroundGradientTo: '#fff',
+                                    decimalPlaces: 1,
+                                    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                                    labelColor: () => '#333',
+                                    propsForDots: { r: '5' },
+                                }}
+                                style={{ marginVertical: 8, borderRadius: 16, alignSelf: 'center' }}
+                                getDotColor={() => '#8285fb'}
+                                verticalLabelRotation={-15}
+                            />
+                        );
+                    })()}
+                </>
             )}
         </View>
     );
@@ -304,5 +336,13 @@ const styles = StyleSheet.create({
     inactiveText: {
         color: '#aaa',
     },
+    noDataContainer: {
+        height: 220,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    noDataText: {
+        color: '#aaa',
+        fontSize: 16,
+    },
 });
-

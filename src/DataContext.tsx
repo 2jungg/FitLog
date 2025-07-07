@@ -20,7 +20,7 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
-    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, initialWeightLogs, 'BMI'));
+    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, [], 'BMI'));
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
     const [workoutData, setWorkoutData] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
@@ -39,6 +39,7 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
             setDietLogData(db.getAllDietLogsAsGroup());
             setWorkoutData(db.getAllWorkouts());
             setLoading(false);
+            console.log(dietLogData.dietLogs); // 디버깅용
         };
         loadData();
     }, []);
