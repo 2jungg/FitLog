@@ -88,7 +88,7 @@ export default function WorkoutScreen(){
                         <View style={styles.row}>
                             <View style={{flex: 1}}>
                                 <Text style={styles.time}>{formatTimeRange(item.startTime,item.endTime)}</Text>
-                                <Text style={{fontSize: 16}}>
+                                <Text style={{fontSize: 15}}>
                                     {item.workoutCategory} / 소모한 칼로리: <Text style={{fontWeight: 'bold'}}>{item.expectedCalory}kcal</Text></Text>
                             </View>
                             <Image source={{uri:item.workoutImgUrl}} style={styles.image}/>
