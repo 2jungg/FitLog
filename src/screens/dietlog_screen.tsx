@@ -68,32 +68,6 @@ const DietLogScreen = () => {
         setselectedDietLog(null);
     };
 
-    const handlePress = async () => {
-        try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
-
-            if (result.didCancel) {
-                console.log("User cancelled image picker");
-            } else if (result.errorCode) {
-                console.log("ImagePicker Error: ", result.errorMessage);
-            } else if (result.assets && result.assets.length > 0) {
-                const asset = result.assets[0];
-                if (asset.base64 && asset.type) {
-                    const response = await sendToGemini(
-                        asset.base64,
-                        asset.type
-                    );
-                    console.log("Gemini API Response:", response);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     const navigation =
         useNavigation<NativeStackNavigationProp<DietLogStackParamList>>();
     const CamBttn = util_icons.cam;
@@ -107,8 +81,9 @@ const DietLogScreen = () => {
                         <Text style={{ margin: 20 }}> 식단 기록이 없습니다. </Text>
                     </View>
                 ) : (
-                    Array.from(dietLogData.dietLogs.entries()).map(
-                        ([date, logs]) => (
+                    Array.from(dietLogData.dietLogs.entries())
+                        .sort(([a], [b]) => b.localeCompare(a)) // Descending order by date string
+                        .map(([date, logs]) => (
                             <View key={date} style={styles.card}>
                                 <Text style={styles.dateText}>
                                     {formatDate(new Date(date))}
