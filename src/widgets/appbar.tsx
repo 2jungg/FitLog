@@ -19,7 +19,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
 
 const styles = StyleSheet.create({
     container: {
-        height: 78,
+        height: 70 ,
         backgroundColor: "#fff",
         flexDirection: "row",
         justifyContent: "space-between",

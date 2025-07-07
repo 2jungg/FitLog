@@ -1,4 +1,4 @@
-interface WeightLog {
+export interface WeightLog {
     day: Date;
     weight: number;     // kg unit
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text, 
@@ -6,6 +6,7 @@ import {
     FlatList,
     Image,
     TouchableOpacity,
+    Modal,
 } from 'react-native';
 import { Workout, WorkoutCategory} from '../models/workout';
 import {
@@ -14,32 +15,13 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
+import { useData } from "../DataContext";
 
 
-
-const dummyData: Workout[] = [
-    new Workout(
-        '1',
-        WorkoutCategory.StrengthTraining,
-        new Date('2025-07-04T16:00:00'),
-        new Date('2025-07-04T18:00:00'),
-        300,
-        'https://m.health.chosun.com/site/data/img_dir/2024/10/16/2024101602160_0.jpg'
-    ),
-    new Workout(
-        '2',
-        WorkoutCategory.Running,
-        new Date('2025-07-04T23:30:00'),
-        new Date('2025-07-05T1:00:00'),
-        300,
-        'https://m.health.chosun.com/site/data/img_dir/2024/10/16/2024101602160_0.jpg'
-    ),
-];
 
 // 운동 시간 출력 (시작시간 ~ 종료시간)
 function formatTimeRange(start: Date, end: Date): string {
     const sameDate=
-        start.getFullYear() === end.getFullYear() &&
         start.getMonth() === end.getMonth() &&
         start.getDate() === end.getDate(); 
     
@@ -72,6 +54,22 @@ function formatTime(date: Date): string{
 
 export default function WorkoutScreen(){
     const navigation = useNavigation<NativeStackNavigationProp<WorkoutStackParamList>>();
+    
+    const { workoutData } = useData(); 
+
+    {/*상세 운동 내용 팝업*/}
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+
+    const openModal = (workout: Workout) => {
+        setSelectedWorkout(workout);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedWorkout(null);
+    };
 
     return(
         /* Title */
@@ -80,15 +78,15 @@ export default function WorkoutScreen(){
 
             {/* Workout List */}
             <FlatList
-                data={dummyData}
+                data={workoutData}
                 keyExtractor={(item) => item.workoutId}
                 renderItem={({item}) => (
                 <View style={{paddingHorizontal: 8}}>
-                    <TouchableOpacity style={styles.card}>
+                    <TouchableOpacity style={styles.card} onPress={() => openModal(item)}>
                         <View style={styles.row}>
                             <View style={{flex: 1}}>
                                 <Text style={styles.time}>{formatTimeRange(item.startTime,item.endTime)}</Text>
-                                <Text style={{fontSize: 16}}>
+                                <Text style={{fontSize: 15}}>
                                     {item.workoutCategory} / 소모한 칼로리: <Text style={{fontWeight: 'bold'}}>{item.expectedCalory}kcal</Text></Text>
                             </View>
                             <Image source={{uri:item.workoutImgUrl}} style={styles.image}/>
@@ -98,6 +96,34 @@ export default function WorkoutScreen(){
                 )}
             />
 
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        {selectedWorkout && (
+                            <>
+                                <TouchableOpacity onPress={closeModal} style={styles.modalCloseBtn}>
+                                    <Text style={styles.modalCloseText}>X</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.modalTitle}>운동 상세 정보</Text>
+                                {selectedWorkout.workoutImgUrl && (
+                                    <Image source={{ uri: selectedWorkout.workoutImgUrl }} style={styles.modalImage} />
+                                )}
+                                
+                                <Text>운동 종류: {selectedWorkout.workoutCategory}</Text>
+                                <Text>운동 시간: {formatTimeRange(selectedWorkout.startTime, selectedWorkout.endTime)}</Text>
+                                <View style={[styles.row, {padding:20}]}>
+                                    <Text style={{fontSize: 20, }}>소모한 칼로리: </Text><Text style={{fontWeight: 'bold', fontSize: 20}}>{selectedWorkout.expectedCalory}kcal</Text>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
             {/*Floating button */}
             <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('WorkoutForm')}>
                 <Text style={styles.fabText}>+</Text>
@@ -145,7 +171,7 @@ const styles= StyleSheet.create({
     },
     fab:{
         position: 'absolute',
-        bottom: 64,
+        bottom: 40,
         right: 24,
         backgroundColor: '#8285FB',
         width: 48,
@@ -157,7 +183,39 @@ const styles= StyleSheet.create({
     },
     fabText:{
         color: '#fff',
-        fontSize: 24,
+        fontSize: 35,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalImage: {
+        width: 200,
+        height: 200,
+        marginVertical: 10,
+        borderRadius: 10,
+    },
+    modalCloseBtn: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        zIndex: 1,
+    },
+    modalCloseText: {
+        fontSize: 20
     }
-})
+});
