@@ -161,7 +161,7 @@ export default function WorkoutFormScreen(){
             <Pressable style={styles.input} onPress={() => setShowStartPicker(true)}>
                 <Text>
                     {startTime.toLocaleString()}
-                </Text>    
+                </Text>
             </Pressable>
             {showStartPicker && (
                 <DateTimePickerModal

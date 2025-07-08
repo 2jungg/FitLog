@@ -56,6 +56,10 @@ export default function WorkoutScreen() {
 
     const { workoutData, deleteWorkout } = useData();
 
+    const sortedWorkoutData = [...workoutData].sort(
+        (a, b) => b.startTime.getTime() - a.startTime.getTime()
+    );
+
     {
         /*상세 운동 내용 팝업*/
     }
@@ -81,7 +85,7 @@ export default function WorkoutScreen() {
 
             {/* Workout List */}
             <FlatList
-                data={workoutData}
+                data={sortedWorkoutData}
                 keyExtractor={(item) => item.workoutId}
                 renderItem={({ item }) => (
                     <View style={{ paddingHorizontal: 8 }}>

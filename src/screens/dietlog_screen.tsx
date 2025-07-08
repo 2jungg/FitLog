@@ -89,7 +89,10 @@ const DietLogScreen = () => {
                                     {formatDate(new Date(date))}
                                 </Text>
                                 <View style={styles.imgCard}>
-                                    {logs.map((log: DietLog) => (
+                                    {logs.sort((a, b) =>
+                                                b.recordDate.getTime() -
+                                                a.recordDate.getTime())
+                                        .map((log: DietLog) => (
                                         <View
                                             key={log.dietLogId}
                                             style={styles.imgContainer}
