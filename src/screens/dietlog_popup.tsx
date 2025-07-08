@@ -1,31 +1,85 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 
-const DietLogPopup = () => {
+interface CustomAlertProps {
+    visible: boolean;
+    title: string;
+    message: string;
+    onClose: () => void;
+}
+
+const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, message, onClose }) => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>다이어트 로그 팝업입니다!</Text>
-            <TouchableOpacity onPress={() => console.log('Button Pressed')}>
-                <Text style={styles.text}>버튼</Text>
-            </TouchableOpacity>
-            <Text style={styles.text}>다이어트 로그 팝업 내용이 여기에 표시됩니다.</Text>
-            <Text style={styles.text}>추가적인 정보나 기능을 여기에 추가할 수 있습니다.</Text>
-            <Text style={styles.text}>예: 음식 사진 업로드, 칼로리 계산 등</Text>
-            <Text style={styles.text}>팝업을 닫으려면 화면을 터치하세요.</Text>
-            <Text style={styles.text}>또는 뒤로 가기 버튼을 눌러주세요.</Text>
-        </View>
+        <Modal
+            transparent={true}
+            animationType="fade"
+            visible={visible}
+            onRequestClose={onClose}
+        >
+            <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Text style={styles.modalTitle}>{title}</Text>
+                    <Text style={styles.modalText}>{message}</Text>
+                    <TouchableOpacity
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={onClose}
+                    >
+                        <Text style={styles.textStyle}>닫기</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    centeredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    text: {
-        fontSize: 18,
-        color: '#333',
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    button: {
+        borderRadius: 10,
+        padding: 10,
+        elevation: 2,
+        marginTop: 15,
+        width: 100,
+    },
+    buttonClose: {
+        backgroundColor: '#8285FB',
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalTitle: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+        fontSize: 16,
     },
 });
+
+export default CustomAlert;
