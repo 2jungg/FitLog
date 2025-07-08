@@ -7,8 +7,8 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
-    Alert,
 } from "react-native";
+import CustomAlert from "./dietlog_popup";
 import { sendToGemini } from "../services/dietlog_api";
 import { launchImageLibrary } from "react-native-image-picker";
 import { useData } from "../DataContext";
@@ -26,6 +26,15 @@ const DietLogFormScreen = () => {
     const [foodTime, setFoodTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [isDataLoading, setIsDataLoading] = useState(false);
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const showAlert = (title: string, message: string) => {
+        setAlertTitle(title);
+        setAlertMessage(message);
+        setAlertVisible(true);
+    };
 
     const handleConfirmTime = (selectedDate: Date) => {
         setFoodTime(selectedDate);
@@ -117,11 +126,11 @@ const DietLogFormScreen = () => {
                     style={styles.button2}
                     onPress={() => {
                         if (!imageUrl || !base64Image || !mimeType) {
-                            Alert.alert("알림", "음식 사진을 선택해주세요.");
+                            showAlert("알림", "음식 사진을 선택해주세요.");
                             return;
                         }
                         if (!foodTime) {
-                            Alert.alert("알림", "식사 시간을 선택해주세요.");
+                            showAlert("알림", "식사 시간을 선택해주세요.");
                             return;
                         }
                         setIsDataLoading(true);
@@ -139,13 +148,19 @@ const DietLogFormScreen = () => {
                             })
                             .catch((error) => {
                                 console.error(error);
-                                Alert.alert("오류", "식단 정보를 저장하는 중 오류가 발생했습니다.");
+                                showAlert("오류", "식단 정보를 저장하는 중 오류가 발생했습니다.");
                             });
                     }}
                 >
                     <Text style={styles.buttonText2}>완료</Text>
                 </TouchableOpacity>
             </View>
+            <CustomAlert
+                visible={alertVisible}
+                title={alertTitle}
+                message={alertMessage}
+                onClose={() => setAlertVisible(false)}
+            />
         </View>
     );
 };
