@@ -27,31 +27,34 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
     const [loading, setLoading] = useState(true);
     console.log("Debug: 2");
     useEffect(() => {
-        const loadData = () => {
-            const profile = db.getProfile();
+        const loadData = async () => {
+            const profile = await db.getProfile();
             if (!profile) {
                 console.log(profile);
                 // 프로필이 없으면 기본 프로필 생성 및 저장
                 const defaultProfile = new Profile('이중권', 180, [], "BMI 정상으로 가보자!!");
-                db.saveProfile(defaultProfile);
+                await db.saveProfile(defaultProfile);
                 setUserData(defaultProfile);
             } else {
                 setUserData(profile);
             }
-            setDietLogData(db.getAllDietLogsAsGroup());
-            setWorkoutData(db.getAllWorkouts());
+            const dietLogs = await db.getAllDietLogsAsGroup();
+            setDietLogData(dietLogs);
+            const workouts = await db.getAllWorkouts();
+            setWorkoutData(workouts);
+
             setLoading(false);
-            console.log(dietLogData.dietLogs); // 디버깅용
+            console.log(dietLogs.dietLogs); // 디버깅용
         };
         loadData();
     }, []);
 
-    const handleUpdateUserData = (newProfileData: Profile) => {
+    const handleUpdateUserData = async (newProfileData: Profile) => {
         setUserData(newProfileData);
-        db.saveProfile(newProfileData);
+        await db.saveProfile(newProfileData);
     };
 
-    const handleAddDietLog = (newDietLog: DietLog) => {
+    const handleAddDietLog = async (newDietLog: DietLog) => {
         const newData = new DietLogGroupByDate();
         newData.dietLogs = new Map(dietLogData.dietLogs);
         newData.addDietLog(newDietLog);
@@ -59,10 +62,10 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
         setDietLogData(newData);
         
         const allLogs: DietLog[] = Array.from(newData.dietLogs.values()).flat();
-        db.saveAllDietLogs(allLogs);
+        await db.saveAllDietLogs(allLogs);
     };
 
-    const handleDeleteDietLog = (dietLogId: string) => {
+    const handleDeleteDietLog = async (dietLogId: string) => {
         const newDietLogData = new DietLogGroupByDate();
         
         dietLogData.dietLogs.forEach((logs, date) => {
@@ -75,25 +78,25 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
         setDietLogData(newDietLogData);
 
         const allLogs: DietLog[] = Array.from(newDietLogData.dietLogs.values()).flat();
-        db.saveAllDietLogs(allLogs);
+        await db.saveAllDietLogs(allLogs);
     };
 
-    const handleAddWorkout = (newWorkout: Workout) => {
+    const handleAddWorkout = async (newWorkout: Workout) => {
         const newWorkouts = [newWorkout, ...workoutData];
         setWorkoutData(newWorkouts);
-        db.addWorkout(newWorkout); // db_service의 addWorkout은 내부적으로 전체를 다시 저장합니다.
+        await db.addWorkout(newWorkout); // db_service의 addWorkout은 내부적으로 전체를 다시 저장합니다.
     };
 
-    const handleUpdateWorkout = (updatedWorkout: Workout) => {
+    const handleUpdateWorkout = async (updatedWorkout: Workout) => {
         const newWorkouts = workoutData.map(w => w.workoutId === updatedWorkout.workoutId ? updatedWorkout : w);
         setWorkoutData(newWorkouts);
-        db.updateWorkout(updatedWorkout);
+        await db.updateWorkout(updatedWorkout);
     };
 
-    const handleDeleteWorkout = (workoutId: string) => {
+    const handleDeleteWorkout = async (workoutId: string) => {
         const newWorkouts = workoutData.filter(w => w.workoutId !== workoutId);
         setWorkoutData(newWorkouts);
-        db.deleteWorkout(workoutId);
+        await db.deleteWorkout(workoutId);
     };
 
     const value = {
