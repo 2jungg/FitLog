@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Config from 'react-native-config';
 import { APIResponse } from '../models/dietlog';
+import { Alert } from 'react-native';
 
 const apiKey = Config.GEMINI_API_KEY;
 if (!apiKey) {
@@ -58,7 +59,6 @@ export const sendToGemini = async (
 	if (!base64Image || !promptText) {
 		throw new Error('이미지와 프롬프트를 모두 제공해야 합니다.');
 	}
-
 	try {
 		const imagePart = {
 			inlineData: {
@@ -71,12 +71,14 @@ export const sendToGemini = async (
 		const result = await model.generateContent([promptText, imagePart]);
 
 		const response = result.response;
-		const text = response.text();
+		const text = response.text().replace(/^`+|`+$/g, '');
 		const responseData: APIResponse = JSON.parse(text);
 
 		return responseData;
 	} catch (error) {
-		console.error('Gemini API 호출 오류:', error);
+		Alert.alert(
+			'API 호출 중 문제가 발생했습니다. 나중에 다시 시도해주세요.',
+		);
 		throw new Error(
 			'Gemini API 호출 중 문제가 발생했습니다: ' + (error as Error).message,
 		);
