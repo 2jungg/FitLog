@@ -44,7 +44,6 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
             setWorkoutData(workouts);
 
             setLoading(false);
-            console.log(dietLogs.dietLogs); // 디버깅용
         };
         loadData();
     }, []);
