@@ -1,12 +1,9 @@
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Profile } from '../models/profile';
 import { DietLog, DietLogGroupByDate } from '../models/dietlog';
 import { Workout } from '../models/workout';
 
-// 1. MMKV 저장소 인스턴스 생성
-export const storage = new MMKV();
-
-// 2. 데이터 저장을 위한 키 정의
+// 1. 데이터 저장을 위한 키 정의
 const PROFILE_KEY = 'profile';
 const DIETLOGS_KEY = 'dietlogs';
 const WORKOUTS_KEY = 'workouts';
@@ -14,13 +11,13 @@ const WORKOUTS_KEY = 'workouts';
 // --- Profile CRUD ---
 
 // Create & Update (Profile은 보통 하나이므로 C와 U를 합칩니다)
-export const saveProfile = (profile: Profile) => {
-  storage.set(PROFILE_KEY, JSON.stringify(profile));
+export const saveProfile = async (profile: Profile) => {
+  await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 };
 
 // Read
-export const getProfile = (): Profile | null => {
-  const profileJson = storage.getString(PROFILE_KEY);
+export const getProfile = async (): Promise<Profile | null> => {
+  const profileJson = await AsyncStorage.getItem(PROFILE_KEY);
   if (profileJson) {
     // JSON.parse 후 클래스 인스턴스로 다시 만들어주면, 클래스 메서드를 사용할 수 있습니다.
     const plainProfile = JSON.parse(profileJson);
@@ -35,16 +32,16 @@ export const getProfile = (): Profile | null => {
 };
 
 // Delete
-export const deleteProfile = () => {
-  storage.delete(PROFILE_KEY);
+export const deleteProfile = async () => {
+  await AsyncStorage.removeItem(PROFILE_KEY);
 };
 
 
 // --- DietLog CRUD ---
 
 // Read (All) -> DietLogGroupByDate 객체로 변환하여 반환
-export const getAllDietLogsAsGroup = (): DietLogGroupByDate => {
-  const logsJson = storage.getString(DIETLOGS_KEY);
+export const getAllDietLogsAsGroup = async (): Promise<DietLogGroupByDate> => {
+  const logsJson = await AsyncStorage.getItem(DIETLOGS_KEY);
   const newGroup = new DietLogGroupByDate();
   if (logsJson) {
     const plainLogs: DietLog[] = JSON.parse(logsJson);
@@ -57,16 +54,16 @@ export const getAllDietLogsAsGroup = (): DietLogGroupByDate => {
 };
 
 // Create/Update/Delete는 전체 로그 배열을 저장하는 방식으로 단순화
-export const saveAllDietLogs = (allLogs: DietLog[]) => {
-  storage.set(DIETLOGS_KEY, JSON.stringify(allLogs));
+export const saveAllDietLogs = async (allLogs: DietLog[]) => {
+  await AsyncStorage.setItem(DIETLOGS_KEY, JSON.stringify(allLogs));
 };
 
 
 // --- Workout CRUD ---
 
 // Read (All)
-export const getAllWorkouts = (): Workout[] => {
-    const workoutsJson = storage.getString(WORKOUTS_KEY);
+export const getAllWorkouts = async (): Promise<Workout[]> => {
+    const workoutsJson = await AsyncStorage.getItem(WORKOUTS_KEY);
     if (workoutsJson) {
         const plainWorkouts = JSON.parse(workoutsJson);
         // Date 객체 복원
@@ -80,25 +77,25 @@ export const getAllWorkouts = (): Workout[] => {
 };
 
 // Create
-export const addWorkout = (newWorkout: Workout) => {
-    const allWorkouts = getAllWorkouts();
+export const addWorkout = async (newWorkout: Workout) => {
+    const allWorkouts = await getAllWorkouts();
     allWorkouts.unshift(newWorkout);
-    storage.set(WORKOUTS_KEY, JSON.stringify(allWorkouts));
+    await AsyncStorage.setItem(WORKOUTS_KEY, JSON.stringify(allWorkouts));
 };
 
 // Update
-export const updateWorkout = (updatedWorkout: Workout) => {
-    let allWorkouts = getAllWorkouts();
+export const updateWorkout = async (updatedWorkout: Workout) => {
+    let allWorkouts = await getAllWorkouts();
     const workoutIndex = allWorkouts.findIndex(w => w.workoutId === updatedWorkout.workoutId);
     if (workoutIndex !== -1) {
         allWorkouts[workoutIndex] = updatedWorkout;
-        storage.set(WORKOUTS_KEY, JSON.stringify(allWorkouts));
+        await AsyncStorage.setItem(WORKOUTS_KEY, JSON.stringify(allWorkouts));
     }
 };
 
 // Delete
-export const deleteWorkout = (workoutId: string) => {
-    let allWorkouts = getAllWorkouts();
+export const deleteWorkout = async (workoutId: string) => {
+    let allWorkouts = await getAllWorkouts();
     const filteredWorkouts = allWorkouts.filter(w => w.workoutId !== workoutId);
-    storage.set(WORKOUTS_KEY, JSON.stringify(filteredWorkouts));
+    await AsyncStorage.setItem(WORKOUTS_KEY, JSON.stringify(filteredWorkouts));
 };
