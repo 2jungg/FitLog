@@ -130,21 +130,24 @@ const DietLogScreen = () => {
                     <View style={styles.modalContent}>
                         {selectedDietLog && (
                             <>
-                                <TouchableOpacity
-                                    onPress={closeModal}
-                                    style={styles.modalCloseBtn}
-                                >
-                                    <Text style={styles.modalCloseText}>×</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={styles.delBtnText}
-                                    onPress={() => {
-                                        deleteDietLog(selectedDietLog.dietLogId);
-                                        closeModal();
-                                    }}
-                                >
-                                    <Text>삭제</Text>
-                                </TouchableOpacity>
+                                <View style={styles.modalbar}>
+                                    <TouchableOpacity
+                                        //style={styles.delBtnText}
+                                        onPress={() => {
+                                            deleteDietLog(selectedDietLog.dietLogId);
+                                            closeModal();
+                                        }}
+                                    >
+                                        <Text>삭제</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={closeModal}
+                                        //style={styles.modalCloseBtn}
+                                    >
+                                        <Text style={styles.modalCloseText}>×</Text>
+                                    </TouchableOpacity>
+
+                                </View>
                                 <Text style={styles.modalTitle}>
                                     {selectedDietLog.responseData.foodName}
                                 </Text>
@@ -273,7 +276,7 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: "#ffffff",
-        padding: 15,
+        padding: 10,
         shadowOffset: {
             width: 0,
             height: 1,
@@ -287,14 +290,15 @@ const styles = StyleSheet.create({
     imgContainer: {
         shadowColor: "#000",
         alignItems: "center",
-        marginBottom: 5,
+        
         width: "33%", // Adjust width to fit two images per row
     },
     img: {
         width: 110,
         height: 110,
-        marginTop: 10,
+        marginTop: 10,    
         marginBottom: 5,
+        marginHorizontal: 5
     },
     imgName: {
         textAlign: "center",
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
     modalContent: {
         width: "80%",
         backgroundColor: "#fff",
-        padding: 20,
+        padding: 10,
         borderRadius: 12,
         alignItems: "center",
     },
@@ -328,30 +332,13 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 10,
     },
-    modalCloseBtn: {
-        position: "absolute",
-        top: 10,
-        right: 20,
-        zIndex: 1,
-    },
     modalCloseText: {
         fontSize: 25,
-    },
-    modalDelBtn: {
-        position: "absolute",
-        top: 10,
-        right: 20,
-        zIndex: 1,
     },
     delBtnText: {
         fontSize: 5,
         color: "#333",
-        position: "absolute",
-        top: 10,
-        left: 20,
-        zIndex: 1,
         textAlign: "left",
-        marginTop: 10,
     },
     subScore: {
         fontSize: 14,
@@ -365,16 +352,16 @@ const styles = StyleSheet.create({
     },
     totScore: {
         fontSize: 25,
-        margin: 30,
+        margin: 15,
     },
     commentBox: {
         backgroundColor: "#f0f0f0",
         borderRadius: 8,
-        marginTop: 10,
+        marginTop: 5,
         width: "90%",
         alignItems: "center",
         paddingVertical: 15,
-        marginBottom: 20,
+        marginBottom: 5,
     },
     commentText: {
         fontSize: 15,
@@ -383,6 +370,12 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingHorizontal: 10,
     },
+    modalbar:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "90%",
+        alignItems: "center",
+    }
 });
 
 export default DietLogScreen;

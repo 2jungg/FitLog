@@ -327,8 +327,7 @@ const styles = StyleSheet.create({
     imginput: {
         borderWidth: 1,
         borderColor: '#ccc',
-        marginBottom: 12,
-        width: 320,
+        width: 320  ,
         height: 320,
         alignSelf: 'center',
         borderRadius: 12,

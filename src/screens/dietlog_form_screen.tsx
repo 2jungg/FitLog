@@ -153,11 +153,10 @@ const DietLogFormScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f5f5",
-        alignItems: "center",
+        backgroundColor: "#f5f5f5",    
     },
     title: {
-        padding: 15,
+        marginTop: 15,
         fontWeight: "bold",
         fontSize: 24,
         textAlign: "center",
@@ -169,8 +168,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     text: {
+        marginTop: 10,
         fontSize: 16,
         color: "#000",
+
     },
     fab: {
         position: "absolute",
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         width: 320,
         padding: 8,
+        fontWeight: 'bold',
     },
     input: {
         flexDirection: "row",
@@ -226,9 +228,8 @@ const styles = StyleSheet.create({
     imginput: {
         borderWidth: 1,
         borderColor: "#ccc",
-        marginBottom: 12,
         width: 320,
-        height: 320,
+        height: 250,
         alignSelf: "center",
         borderRadius: 12,
         backgroundColor: "#fff",
