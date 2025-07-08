@@ -26,17 +26,18 @@ export default function ProfileScreen(){
     //날짜와 몸무게 추출
     const sortedLogs = [...(userData?.weightLogs ?? [])].sort((a, b) => a.day.getTime() - b.day.getTime());
     const labels = sortedLogs.map(log => log.day.toLocaleDateString('ko-KR').slice(5));
-    console.log(labels);
     const weights = sortedLogs.map(log => log.weight);
-    console.log(weights);
+    const bmiValues = sortedLogs.map(log => log.bmi);
 
+    // i) 몸무게 그래프 관련 
     const minWeight = Math.min(...weights);
     const maxWeight = Math.max(...weights);
 
     // 진짜 데이터
     const realDataset = {
-    data: weights,
-    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`, // 보이는 선
+        data: weights,
+        color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`, // 보이는 선
+        withDots: true,
     };
 
     // 가짜 데이터: 범위 확보용
@@ -45,12 +46,27 @@ export default function ProfileScreen(){
     withDots: false, // 점 표시 X
     color: () => `rgba(0, 0, 0, 0)`, // 선도 안 보이게
     };
+    
+    // ii) BMI 그래프 관련
+    const minBmi = Math.min(...bmiValues);
+    const maxBmi = Math.max(...bmiValues);
+
+    const bmiDataset = {
+        data: bmiValues,
+        color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+    };
+
+    const bmiPaddingDataset = {
+        data: [minBmi - 2, maxBmi + 2],
+        withDots: false,
+        color: () => `rgba(0, 0, 0, 0)`,
+    };
 
     // 최근 신체 데이터 출력
     const [height, setHeight] = useState(userData?.height?.toString() + "cm" || "000cm");
     const [weight, setWeight] = useState("00kg");
     const [bmi, setBmi] = useState('00.0'); 
-    
+
     // 최신 몸무게로 초기화 
     useEffect(() => {
         if (userData?.weightLogs && userData.weightLogs.length > 0) {
@@ -89,11 +105,13 @@ export default function ProfileScreen(){
 
         const numericHeight = parseInt(height.replace(/[^0-9]/g, ''));
         const numericWeight = parseFloat(weight.replace(/[^0-9.]/g, ''));
+        const numericBmi = parseFloat(bmi.replace(/[^0-9.]/g, ''));   
 
         const today = new Date();
         const newLog: WeightLog = {
             day: today,
-            weight: numericWeight
+            weight: numericWeight,
+            bmi: numericBmi
         };        
 
         // 기존 weight log와 비교하여 중복 여부 판단
@@ -154,7 +172,7 @@ export default function ProfileScreen(){
             {/*몸무게 변화*/}
             <Text style={styles.changeText}>{userData?.username} 님의 건강 그래프</Text>
             
-            {/*리스트/그래프 버튼*/}
+            {/*몸무게 or BMI 버튼*/}
             <View style={{ flexDirection: 'row', marginHorizontal:20}}>
                 <TouchableOpacity
                     style={[styles.tabButton, activeTab === 'weight' && styles.activeTab]}
@@ -169,18 +187,55 @@ export default function ProfileScreen(){
                     <Text style={activeTab === 'BMI' ? styles.activeText : styles.inactiveText}>BMI</Text>
                 </TouchableOpacity>
             </View>
-            {/*그래프 그리기*/}
+
+            {/*i) 몸무게 그래프 그리기*/}
             {activeTab === 'weight' && userData?.weightLogs && (
             <LineChart
                 data={{
                     labels: labels,
                     datasets: [realDataset, paddingDataset],
                 }}
-                width={screenWidth - 40}
+                width={screenWidth - 30}
                 height={220}
                 fromZero={false}
                 withShadow={false}
                 yAxisSuffix="kg"
+                yAxisInterval={1}
+                segments={5}
+                chartConfig={{
+                    backgroundColor: '#fff',
+                    backgroundGradientFrom: '#fff',
+                    backgroundGradientTo: '#fff',
+                    decimalPlaces: 1,
+                    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                    labelColor: () => '#333',
+                    propsForDots: {
+                    r: '7',
+                    strokeWidth: 2,
+                    stroke: '#fff',
+                    },
+                }}
+                style={{
+                    marginVertical: 8,
+                    borderRadius: 16,
+                    alignSelf: 'center',
+                    backgroundColor: 'transparent',
+                }}
+                getDotColor={() => '#8285fb'}
+                verticalLabelRotation={-15}
+                />
+            )}
+            {/*ii) bmi 그래프 그리기*/}
+            {activeTab === 'BMI' && userData?.weightLogs && (
+            <LineChart
+                data={{
+                    labels: labels,
+                    datasets: [bmiDataset, bmiPaddingDataset],
+                }}
+                width={screenWidth - 30}
+                height={220}
+                fromZero={false}
+                withShadow={false}
                 yAxisInterval={1}
                 segments={5} // y축 선 개수
                 chartConfig={{
@@ -191,26 +246,18 @@ export default function ProfileScreen(){
                     color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
                     labelColor: () => '#333',
                     propsForDots: {
-                    r: '5',
+                        r: '5',
                     },
                 }}
                 style={{
                     marginVertical: 8,
                     borderRadius: 16,
                     alignSelf: 'center',
+                    backgroundColor: 'transparent',
                 }}
                 getDotColor={()=>'#8285fb'}
                 verticalLabelRotation={-15}
                 />
-            )}
-            {activeTab === 'BMI' && userData?.weightLogs && (
-                <View>
-                    {userData.weightLogs.map((log, index) => (
-                    <Text key={index}>
-                        {log.day.toLocaleDateString('ko-KR')} - {log.weight}kg
-                    </Text>
-                    ))}
-                </View>
             )}
         </View>
     );
@@ -305,4 +352,3 @@ const styles = StyleSheet.create({
         color: '#aaa',
     },
 });
-
