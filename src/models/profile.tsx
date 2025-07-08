@@ -9,6 +9,7 @@ interface IProfile {
     height: number;     // cm unit
     weightLogs: Array<WeightLog>;
     myGoal: string,
+    profileImage?: string; 
     addWeightLog(_weightlog: WeightLog): void;
     checkWeightLogExists(_weightlog: WeightLog): boolean;
 }
@@ -19,6 +20,7 @@ export class Profile implements IProfile {
         public height: number,
         public weightLogs: Array<WeightLog>,
         public myGoal: string,
+        public profileImage?: string,
     ) {}
     
     addWeightLog(_weightlog: WeightLog): void {

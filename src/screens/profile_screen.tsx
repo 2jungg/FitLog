@@ -7,17 +7,20 @@ import {
     TextInput, 
     Dimensions,
     Alert,
+    Image,
 } from "react-native";
 
 import { useData } from "../DataContext";
 import { util_icons } from "../../assets/icon/icons";
 import { LineChart } from 'react-native-chart-kit';
 import { Profile, WeightLog } from "../models/profile";
+import ProfileModal from "./profile_modal";
 
 export default function ProfileScreen(){
     
     const { userData, updateUserData } = useData();
-    const ProfileBttn = util_icons.profile;   
+    const ProfileBttn = util_icons.profile;
+    const [isModalVisible, setModalVisible] = useState(false);
 
     {/*몸무게 변화 기록*/}
     const [activeTab, setActiveTab] = useState<'weight' | 'BMI'>('weight');
@@ -91,7 +94,8 @@ export default function ProfileScreen(){
                 userData.username,
                 numericHeight,
                 updatedLogs,
-                userData.myGoal
+                userData.myGoal,
+                userData.profileImage
             );
 
         updateUserData(updatedUser);
@@ -102,17 +106,57 @@ export default function ProfileScreen(){
         Alert.alert("중복 등록", "이미 오늘 등록한 데이터가 있습니다.");
         }}
       };
+    
+    const handleSaveProfile = (newUsername: string, newMyGoal: string, newProfileImage: string) => {
+        if (!userData) return;
+        const updatedUser = new Profile(
+            newUsername,
+            userData.height,
+            userData.weightLogs,
+            newMyGoal,
+            newProfileImage
+        );
+        updateUserData(updatedUser);
+        setModalVisible(false);
+    };
+
+    const profileImages: { [key: string]: any } = {
+        '../../assets/profile_img/img_1.webp': require('../../assets/profile_img/img_1.webp'),
+        '../../assets/profile_img/img_2.webp': require('../../assets/profile_img/img_2.webp'),
+        '../../assets/profile_img/img_3.webp': require('../../assets/profile_img/img_3.webp'),
+        '../../assets/profile_img/img_4.webp': require('../../assets/profile_img/img_4.webp'),
+        '../../assets/profile_img/img_5.webp': require('../../assets/profile_img/img_5.webp'),
+        '../../assets/profile_img/img_6.webp': require('../../assets/profile_img/img_6.webp'),
+        '../../assets/profile_img/img_7.webp': require('../../assets/profile_img/img_7.webp'),
+        '../../assets/profile_img/img_8.webp': require('../../assets/profile_img/img_8.webp'),
+        '../../assets/profile_img/img_9.webp': require('../../assets/profile_img/img_9.webp'),
+    };
 
     return (
         <View style={styles.container}>
-            <View style={styles.row1}>
-                <ProfileBttn width={80} height={80}/>
-                <View style={styles.profile}>
-                    <Text style={styles.name}>{userData?.username ?? "이름 없음"} 님</Text>
-                    <Text style={{color: '#575757', fontSize: 10}}>나의 다짐</Text>
-                    <Text>{userData?.myGoal}</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <View style={styles.row1}>
+                    {userData?.profileImage ? (
+                        <Image source={profileImages[userData.profileImage]} style={styles.profileImage} />
+                    ) : (
+                        <ProfileBttn width={80} height={100}/>
+                    )}
+                    <View style={styles.profile}>
+                        <Text style={styles.name}>{userData?.username ?? "이름 없음"} 님</Text>
+                        <Text style={{color: '#575757', fontSize: 10}}>나의 다짐</Text>
+                        <Text>{userData?.myGoal}</Text>
+                    </View>
                 </View>
-            </View>
+            </TouchableOpacity>
+            <ProfileModal
+                visible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onSave={handleSaveProfile}
+                initialUsername={userData?.username ?? ""}
+                initialMyGoal={userData?.myGoal ?? ""}
+                initialProfileImage={userData?.profileImage}
+                modalHeight={700}
+            />
             <View style={styles.row2}>
                 <View style={styles.column}>
                     <Text style={styles.index}>키</Text>
@@ -276,6 +320,11 @@ const styles = StyleSheet.create({
     profile:{
         justifyContent: 'center',
         marginLeft: 30
+    },
+    profileImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
     },
     name: {
         fontSize: 20,
