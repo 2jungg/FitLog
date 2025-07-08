@@ -26,7 +26,7 @@ export const getProfile = async (): Promise<Profile | null> => {
       ...log,
       day: new Date(log.day),
     }));
-    return new Profile(plainProfile.username, plainProfile.height, weightLogs, plainProfile.myGoal);
+    return new Profile(plainProfile.username, plainProfile.height, weightLogs, plainProfile.myGoal, plainProfile.profileImage);
   }
   return null;
 };
