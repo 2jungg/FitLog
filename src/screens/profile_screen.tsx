@@ -191,13 +191,19 @@ export default function ProfileScreen(){
             <View style={{ flexDirection: 'row', marginHorizontal:20}}>
                 <TouchableOpacity
                     style={[styles.tabButton, activeTab === 'weight' && styles.activeTab]}
-                    onPress={() => setActiveTab('weight')}
+                    onPress={() => {
+                        setMarker(prev => ({ ...prev, visible: false, index: -1 }));
+                        setActiveTab('weight');
+                    }}
                 >
                 <Text style={activeTab === 'weight' ? styles.activeText : styles.inactiveText}>몸무게</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tabButton, activeTab === 'BMI' && styles.activeTab2]}
-                    onPress={() => setActiveTab('BMI')}
+                    onPress={() => {
+                        setMarker(prev => ({ ...prev, visible: false, index: -1 }));
+                        setActiveTab('BMI');
+                    }}
                 >
                     <Text style={activeTab === 'BMI' ? styles.activeText : styles.inactiveText}>BMI</Text>
                 </TouchableOpacity>
