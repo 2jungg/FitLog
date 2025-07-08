@@ -10,7 +10,7 @@ import {
     Alert,
 } from "react-native";
 import { sendToGemini } from "../services/dietlog_api";
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useData } from "../DataContext";
 import { util_icons } from "../../assets/icon/icons";
 import { useNavigation } from "@react-navigation/native";
@@ -35,31 +35,67 @@ const DietLogFormScreen = () => {
     const [base64Image, setBase64Image] = useState<string | null>(null);
     const [mimeType, setMimeType] = useState<string | null>(null);
     const ImgBttn = util_icons.empty_img;
-    const handlePress = async () => {
-        try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
+    const handlePress = () => {
+        Alert.alert(
+            "사진 업로드",
+            "선택 방법을 고르세요",
+            [
+            {
+                text: "취소",
+                style: "cancel",
+            },
+            {
+                text: "카메라로 찍기",
+                onPress: async () => {
+                try {
+                    const result = await launchCamera({
+                    mediaType: "photo",
+                    includeBase64: true,
+                    });
 
-            if (result.assets && result.assets.length > 0) {
-                const asset = result.assets[0];
-                let imageUrl = "";
-
-                if (asset.base64 && asset.type) {
-                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
-                    setBase64Image(asset.base64);
-                    setMimeType(asset.type);
-                } else if (asset.uri) {
-                    // This branch might need a way to convert URI to base64 if it's ever used.
-                    // For now, assuming base64 is always available.
-                    setImageUrl(asset.uri);
+                    if (result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    if (asset.base64 && asset.type) {
+                        setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                        setBase64Image(asset.base64);
+                        setMimeType(asset.type);
+                    } else if (asset.uri) {
+                        setImageUrl(asset.uri);
+                    }
+                    }
+                } catch (error) {
+                    console.error("카메라 에러:", error);
                 }
+                },
+            },
+            {
+                text: "갤러리에서 불러오기",
+                onPress: async () => {
+                try {
+                    const result = await launchImageLibrary({
+                    mediaType: "photo",
+                    includeBase64: true,
+                    });
+
+                    if (result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    if (asset.base64 && asset.type) {
+                        setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                        setBase64Image(asset.base64);
+                        setMimeType(asset.type);
+                    } else if (asset.uri) {
+                        setImageUrl(asset.uri);
+                    }
+                    }
+                } catch (error) {
+                    console.error("갤러리 에러:", error);
+                }
+                },
             }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+            ],
+            { cancelable: true }
+        );
+        };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>식단 기록 추가</Text>

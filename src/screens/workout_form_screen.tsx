@@ -9,7 +9,8 @@ import {
     Pressable, 
     Platform,
     FlatList, 
-    ScrollView
+    ScrollView, 
+    Alert
 } from 'react-native';
 
 import {
@@ -17,7 +18,7 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useData } from "../DataContext";
 import { Workout, WorkoutCategory } from "../models/workout";
 import { Profile, WeightLog } from "../models/profile";
@@ -106,32 +107,72 @@ export default function WorkoutFormScreen(){
 
     {/*이미지 저장*/}
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [base64Image, setBase64Image] = useState<string | null>(null);
+    const [mimeType, setMimeType] = useState<string | null>(null);
+    
+
     const ImgBttn = util_icons.empty_img;
-    const handlePress = async () => {
-        try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
-            
-            if (result.assets && result.assets.length > 0){
-                const asset = result.assets[0];
-                let imageUrl = "";
+    const handlePress = () => {
+        Alert.alert(
+            "사진 업로드",
+            "선택 방법을 고르세요",
+            [
+            {
+                text: "취소",
+                style: "cancel",
+            },
+            {
+                text: "카메라로 찍기",
+                onPress: async () => {
+                try {
+                    const result = await launchCamera({
+                    mediaType: "photo",
+                    includeBase64: true,
+                    });
 
-
-                if (asset.base64 && asset.type){
-                    imageUrl = `data:${asset.type};base64,${asset.base64}`;
-                } else if (asset.uri){
-                    imageUrl = asset.uri;
+                    if (result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    if (asset.base64 && asset.type) {
+                        setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                        setBase64Image(asset.base64);
+                        setMimeType(asset.type);
+                    } else if (asset.uri) {
+                        setImageUrl(asset.uri);
+                    }
+                    }
+                } catch (error) {
+                    console.error("카메라 에러:", error);
                 }
-                setImageUrl(imageUrl);
+                },
+            },
+            {
+                text: "갤러리에서 불러오기",
+                onPress: async () => {
+                try {
+                    const result = await launchImageLibrary({
+                    mediaType: "photo",
+                    includeBase64: true,
+                    });
+
+                    if (result.assets && result.assets.length > 0) {
+                    const asset = result.assets[0];
+                    if (asset.base64 && asset.type) {
+                        setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                        setBase64Image(asset.base64);
+                        setMimeType(asset.type);
+                    } else if (asset.uri) {
+                        setImageUrl(asset.uri);
+                    }
+                    }
+                } catch (error) {
+                    console.error("갤러리 에러:", error);
+                }
+                },
             }
-
-        } catch (error) {
-            console.error(error);
-        }
-
-    };
+            ],
+            { cancelable: true }
+        );
+        };
 
     {/*운동 종료 시 가장 가까운 날짜의 몸무게 찾기*/}
     const getNearestWeight = (weightLogs: WeightLog[], targetDate: Date): number | null => {
