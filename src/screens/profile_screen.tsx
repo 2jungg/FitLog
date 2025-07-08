@@ -143,7 +143,7 @@ export default function ProfileScreen(){
                 <Text style={activeTab === 'weight' ? styles.activeText : styles.inactiveText}>몸무게</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.tabButton, activeTab === 'BMI' && styles.activeTab]}
+                    style={[styles.tabButton, activeTab === 'BMI' && styles.activeTab2]}
                     onPress={() => setActiveTab('BMI')}
                 >
                     <Text style={activeTab === 'BMI' ? styles.activeText : styles.inactiveText}>BMI</Text>
@@ -157,7 +157,7 @@ export default function ProfileScreen(){
                     </Text>
                 </View>
             ) : (
-                <>
+                <View style={{ alignItems: 'center' }}>
                     {activeTab === 'weight' && (() => {
                         const labels = sortedLogs.map(log => log.day.toLocaleDateString('ko-KR').slice(5));
                         const weights = sortedLogs.map(log => log.weight);
@@ -178,7 +178,7 @@ export default function ProfileScreen(){
                                     labels: labels,
                                     datasets: [realDataset, paddingDataset],
                                 }}
-                                width={screenWidth - 40}
+                                width={screenWidth - 30}
                                 height={220}
                                 fromZero={false}
                                 withShadow={false}
@@ -207,7 +207,7 @@ export default function ProfileScreen(){
                         const maxBmi = Math.max(...bmiValues);
                         const realDatasetForBMI = {
                             data: bmiValues,
-                            color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                            color: (opacity = 1) => `rgba(251, 133, 130, ${opacity})`,
                         };
                         const paddingDatasetForBMI = {
                             data: [minBmi - 2, maxBmi + 2],
@@ -220,7 +220,7 @@ export default function ProfileScreen(){
                                     labels: labels,
                                     datasets: [realDatasetForBMI, paddingDatasetForBMI],
                                 }}
-                                width={screenWidth - 40}
+                                width={screenWidth - 30}
                                 height={220}
                                 fromZero={false}
                                 withShadow={false}
@@ -232,17 +232,17 @@ export default function ProfileScreen(){
                                     backgroundGradientFrom: '#fff',
                                     backgroundGradientTo: '#fff',
                                     decimalPlaces: 1,
-                                    color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
+                                    color: (opacity = 1) => `rgba(251, 133, 130, ${opacity})`,
                                     labelColor: () => '#333',
                                     propsForDots: { r: '5' },
                                 }}
                                 style={{ marginVertical: 8, borderRadius: 16, alignSelf: 'center' }}
-                                getDotColor={() => '#8285fb'}
+                                getDotColor={() => '#fb8582'}
                                 verticalLabelRotation={-15}
                             />
                         );
                     })()}
-                </>
+                </View>
             )}
         </View>
     );
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     row1: {
-        marginTop: 10,
+        marginTop: 20,
         flexDirection: 'row',
         marginLeft: 40,
         marginBottom: 10
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     button: {
-        width: 320,
+        width: 310,
         height: 40,
         backgroundColor: '#8285FB',
         borderRadius: 12,
@@ -328,6 +328,9 @@ const styles = StyleSheet.create({
     },
     activeTab: {
         backgroundColor: '#cecfff',
+    },
+    activeTab2: {
+        backgroundColor: '#ffdfd9',
     },
     activeText: {
         fontWeight: 'bold',
