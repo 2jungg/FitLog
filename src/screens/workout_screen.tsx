@@ -124,23 +124,26 @@ export default function WorkoutScreen() {
                     <View style={styles.modalContent}>
                         {selectedWorkout && (
                             <>
-                                <TouchableOpacity
-                                    onPress={closeModal}
-                                    style={styles.modalCloseBtn}
-                                >
-                                    <Text style={styles.modalCloseText}>×</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={styles.delBtnText}
-                                    onPress={() => {
-                                        deleteWorkout(
+                                <View style={styles.modalbar}>
+                                    <TouchableOpacity
+                                        //style={styles.delBtnText}
+                                        onPress={() => {
+                                            deleteWorkout(
                                             selectedWorkout.workoutId
                                         );
-                                        closeModal();
-                                    }}
-                                >
-                                    <Text>삭제</Text>
-                                </TouchableOpacity>
+                                            closeModal();
+                                        }}
+                                    >
+                                        <Text>삭제</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={closeModal}
+                                        //style={styles.modalCloseBtn}
+                                    >
+                                        <Text style={styles.modalCloseText}>×</Text>
+                                    </TouchableOpacity>
+
+                                </View>                                
                                 <Text style={styles.modalTitle}>
                                     운동 상세 정보
                                 </Text>
@@ -253,44 +256,28 @@ const styles = StyleSheet.create({
     modalContent: {
         width: "80%",
         backgroundColor: "#fff",
-        padding: 20,
+        padding: 10,
         borderRadius: 12,
         alignItems: "center",
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "bold",
         marginBottom: 10,
     },
     modalImage: {
         width: 200,
         height: 200,
-        marginVertical: 10,
+        marginVertical: 20,
         borderRadius: 10,
-    },
-    modalCloseBtn: {
-        position: "absolute",
-        top: 10,
-        right: 20,
-        zIndex: 1,
     },
     modalCloseText: {
         fontSize: 25,
     },
-    modalDelBtn: {
-        position: "absolute",
-        top: 10,
-        right: 20,
-        zIndex: 1,
-    },
-    delBtnText: {
-        fontSize: 5,
-        color: "#333",
-        position: "absolute",
-        top: 10,
-        left: 20,
-        zIndex: 1,
-        textAlign: "left",
-        marginTop: 10,
-    },
+    modalbar:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "90%",
+        alignItems: "center",
+    }
 });

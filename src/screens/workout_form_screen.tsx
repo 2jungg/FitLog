@@ -221,7 +221,7 @@ export default function WorkoutFormScreen(){
             <TouchableOpacity style={styles.imginput} onPress={handlePress}>
             {imageUrl ? (
                 <Image source={{uri: imageUrl}} 
-                       style={styles.imgurl}/>
+                       style={styles.imginput}/>
             ):(
                 <ImgBttn/>
             )}
@@ -327,20 +327,10 @@ const styles = StyleSheet.create({
     imginput: {
         borderWidth: 1,
         borderColor: '#ccc',
-        width: "100%",
-        height: "100%",
+        width: 320  ,
+        height: 320,
         alignSelf: 'center',
         borderRadius: 12,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    imgurl:{
-        borderWidth: 1,
-        borderColor: '#ccc',
-        width: "100%",
-        height: "100%",
-        alignSelf: 'center',
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
