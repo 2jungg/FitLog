@@ -16,11 +16,20 @@ import { LineChart } from 'react-native-chart-kit';
 import { Profile, WeightLog } from "../models/profile";
 import ProfileModal from "./profile_modal";
 
+interface MarkerData {
+    x: number;
+    y: number;
+    value: number;
+    visible: boolean;
+    index: number;
+}
+
 export default function ProfileScreen(){
     
     const { userData, updateUserData } = useData();
     const ProfileBttn = util_icons.profile;
     const [isModalVisible, setModalVisible] = useState(false);
+    const [marker, setMarker] = useState<MarkerData>({ x: 0, y: 0, value: 0, visible: false, index: -1 });
 
     {/*몸무게 변화 기록*/}
     const [activeTab, setActiveTab] = useState<'weight' | 'BMI'>('weight');
@@ -241,6 +250,18 @@ export default function ProfileScreen(){
                                 style={{ marginVertical: 8, borderRadius: 16, alignSelf: 'center' }}
                                 getDotColor={() => '#8285fb'}
                                 verticalLabelRotation={-15}
+                                onDataPointClick={({ value, x, y, index, dataset }) => {
+                                    if (dataset.withDots === false) {
+                                        setMarker(prev => ({ ...prev, visible: false, index: -1 }));
+                                        return;
+                                    }
+                                    setMarker(prev => {
+                                        if (prev.visible && prev.index === index) {
+                                            return { ...prev, visible: false, index: -1 };
+                                        }
+                                        return { x, y, value, visible: true, index };
+                                    });
+                                }}
                             />
                         );
                     })()}
@@ -283,9 +304,28 @@ export default function ProfileScreen(){
                                 style={{ marginVertical: 8, borderRadius: 16, alignSelf: 'center' }}
                                 getDotColor={() => '#fb8582'}
                                 verticalLabelRotation={-15}
+                                onDataPointClick={({ value, x, y, index, dataset }) => {
+                                    if (dataset.withDots === false) {
+                                        setMarker(prev => ({ ...prev, visible: false, index: -1 }));
+                                        return;
+                                    }
+                                    setMarker(prev => {
+                                        if (prev.visible && prev.index === index) {
+                                            return { ...prev, visible: false, index: -1 };
+                                        }
+                                        return { x, y, value, visible: true, index };
+                                    });
+                                }}
                             />
                         );
                     })()}
+                    {marker.visible && (
+                        <View style={[styles.marker, { left: marker.x - 25, top: marker.y - 40 }]}>
+                            <Text style={styles.markerText}>
+                                {activeTab === 'weight' ? `${marker.value.toFixed(1)}kg` : marker.value.toFixed(1)}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             )}
         </View>
@@ -396,5 +436,17 @@ const styles = StyleSheet.create({
     noDataText: {
         color: '#aaa',
         fontSize: 16,
+    },
+    marker: {
+        position: 'absolute',
+        backgroundColor: 'black',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        elevation: 5,
+    },
+    markerText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
