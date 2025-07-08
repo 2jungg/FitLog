@@ -19,7 +19,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
 
 const styles = StyleSheet.create({
     appBar: {
-        height: 70,
+        height: 60,
         backgroundColor: "#fff",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -42,10 +42,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: "bold",
         color: "#000",
         marginLeft: 40,
+        fontFamily: "",
     },
     name: {
         fontSize: 15,
