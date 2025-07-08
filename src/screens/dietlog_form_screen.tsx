@@ -7,10 +7,11 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
+    Modal,
 } from "react-native";
 import CustomAlert from "./dietlog_popup";
 import { sendToGemini } from "../services/dietlog_api";
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchCamera, launchImageLibrary, Asset } from "react-native-image-picker";
 import { useData } from "../DataContext";
 import { util_icons } from "../../assets/icon/icons";
 import { useNavigation } from "@react-navigation/native";
@@ -44,30 +45,45 @@ const DietLogFormScreen = () => {
     const [base64Image, setBase64Image] = useState<string | null>(null);
     const [mimeType, setMimeType] = useState<string | null>(null);
     const ImgBttn = util_icons.empty_img;
-    const handlePress = async () => {
-        try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
 
-            if (result.assets && result.assets.length > 0) {
-                const asset = result.assets[0];
-                let imageUrl = "";
+    const [showImagePickerModal, setShowImagePickerModal] = useState(false);
 
-                if (asset.base64 && asset.type) {
-                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
-                    setBase64Image(asset.base64);
-                    setMimeType(asset.type);
-                } else if (asset.uri) {
-                    // This branch might need a way to convert URI to base64 if it's ever used.
-                    // For now, assuming base64 is always available.
-                    setImageUrl(asset.uri);
-                }
-            }
-        } catch (error) {
-            console.error(error);
+    const handleCamera = async () => {
+    try {
+        const result = await launchCamera({ mediaType: "photo", includeBase64: true });
+        if (result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        if (asset.base64 && asset.type) {
+            setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+            setBase64Image(asset.base64);
+            setMimeType(asset.type);
+        } else if (asset.uri) {
+            setImageUrl(asset.uri);
         }
+        }
+    } catch (error) {
+        console.error("카메라 에러:", error);
+    }
+    setShowImagePickerModal(false);
+    };
+
+    const handleGallery = async () => {
+    try {
+        const result = await launchImageLibrary({ mediaType: "photo", includeBase64: true });
+        if (result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        if (asset.base64 && asset.type) {
+            setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+            setBase64Image(asset.base64);
+            setMimeType(asset.type);
+        } else if (asset.uri) {
+            setImageUrl(asset.uri);
+        }
+        }
+    } catch (error) {
+        console.error("갤러리 에러:", error);
+    }
+    setShowImagePickerModal(false);
     };
     return (
         <View style={styles.container}>
@@ -96,7 +112,7 @@ const DietLogFormScreen = () => {
 
                 {/*음식 사진*/}
                 <Text style={styles.formtext}>음식 사진</Text>
-                <TouchableOpacity style={styles.imginput} onPress={handlePress}>
+                <TouchableOpacity style={styles.imginput} onPress={() => setShowImagePickerModal(true)}>
                     {imageUrl ? (
                         <Image
                             source={{ uri: imageUrl }}
@@ -155,6 +171,29 @@ const DietLogFormScreen = () => {
                     <Text style={styles.buttonText2}>완료</Text>
                 </TouchableOpacity>
             </View>
+            <Modal
+                visible={showImagePickerModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowImagePickerModal(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalBox}>
+                        <TouchableOpacity style={styles.modalOption} onPress={handleCamera}>
+                            <Text style={styles.modalOptionText}>📷 카메라로 찍기</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalOption} onPress={handleGallery}>
+                            <Text style={styles.modalOptionText}>🖼 갤러리에서 불러오기</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.modalCancel}
+                            onPress={() => setShowImagePickerModal(false)}
+                        >
+                            <Text style={styles.modalCancelText}>취소</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
             <CustomAlert
                 visible={alertVisible}
                 title={alertTitle}
@@ -282,6 +321,42 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         fontSize: 15,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalBox: {
+        width: 280,
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        paddingVertical: 10,
+        alignItems: "center",
+        elevation: 10,
+    },
+    modalOption: {
+        paddingVertical: 12,
+        width: "100%",
+        alignItems: "center",
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#ddd",
+    },
+    modalOptionText: {
+        fontSize: 16,
+        color: "#333",
+    },
+    modalCancel: {
+        //marginTop: 10,
+        paddingVertical: 12,
+        width: "100%",
+        alignItems: "center",
+    },
+    modalCancelText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#FF5555",
     },
 });
 

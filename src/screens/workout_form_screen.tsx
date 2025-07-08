@@ -9,7 +9,8 @@ import {
     Pressable, 
     Platform,
     FlatList, 
-    ScrollView
+    ScrollView, 
+    Modal
 } from 'react-native';
 
 import {
@@ -17,7 +18,7 @@ import {
 } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
-import { launchImageLibrary } from "react-native-image-picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useData } from "../DataContext";
 import { Workout, WorkoutCategory } from "../models/workout";
 import { Profile, WeightLog } from "../models/profile";
@@ -106,31 +107,48 @@ export default function WorkoutFormScreen(){
 
     {/*이미지 저장*/}
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [base64Image, setBase64Image] = useState<string | null>(null);
+    const [mimeType, setMimeType] = useState<string | null>(null);
     const ImgBttn = util_icons.empty_img;
-    const handlePress = async () => {
+
+    const [showImagePickerModal, setShowImagePickerModal] = useState(false);
+
+    const handleCamera = async () => {
         try {
-            const result = await launchImageLibrary({
-                mediaType: "photo",
-                includeBase64: true,
-            });
-            
-            if (result.assets && result.assets.length > 0){
+            const result = await launchCamera({ mediaType: "photo", includeBase64: true });
+            if (result.assets && result.assets.length > 0) {
                 const asset = result.assets[0];
-                let imageUrl = "";
-
-
-                if (asset.base64 && asset.type){
-                    imageUrl = `data:${asset.type};base64,${asset.base64}`;
-                } else if (asset.uri){
-                    imageUrl = asset.uri;
+                if (asset.base64 && asset.type) {
+                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                    setBase64Image(asset.base64);
+                    setMimeType(asset.type);
+                } else if (asset.uri) {
+                    setImageUrl(asset.uri);
                 }
-                setImageUrl(imageUrl);
             }
-
         } catch (error) {
-            console.error(error);
+            console.error("카메라 에러:", error);
         }
+        setShowImagePickerModal(false);
+    };
 
+    const handleGallery = async () => {
+        try {
+            const result = await launchImageLibrary({ mediaType: "photo", includeBase64: true });
+            if (result.assets && result.assets.length > 0) {
+                const asset = result.assets[0];
+                if (asset.base64 && asset.type) {
+                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                    setBase64Image(asset.base64);
+                    setMimeType(asset.type);
+                } else if (asset.uri) {
+                    setImageUrl(asset.uri);
+                }
+            }
+        } catch (error) {
+            console.error("갤러리 에러:", error);
+        }
+        setShowImagePickerModal(false);
     };
 
     {/*운동 종료 시 가장 가까운 날짜의 몸무게 찾기*/}
@@ -218,7 +236,7 @@ export default function WorkoutFormScreen(){
             
             {/*운동 사진*/}
             <Text style={styles.formtext}>운동 사진</Text>
-            <TouchableOpacity style={styles.imginput} onPress={handlePress}>
+            <TouchableOpacity style={styles.imginput} onPress={() => setShowImagePickerModal(true)}>
             {imageUrl ? (
                 <Image source={{uri: imageUrl}} 
                        style={styles.imginput}/>
@@ -240,13 +258,10 @@ export default function WorkoutFormScreen(){
                     onPress={() => {
                         const targetWeight = getNearestWeight(userData?.weightLogs || [], startTime) || 65; // 기본값 65
 
-                        console.log("몸무게:", targetWeight);
                         const expectedCalory = calculateCalories(new Date(startTime), new Date(endTime), normalize(selectedExercise), targetWeight);
                         const workoutId = "DL_" + uuid.v4() as string;
-                        console.log (startTime);
 
                         const workoutCategory = getWorkoutCategoryFromLabel(selectedExercise);
-                        console.log(WorkoutCategory);
 
                         const newWorkout = new Workout(
                             workoutId,
@@ -268,6 +283,29 @@ export default function WorkoutFormScreen(){
                     <Text style={styles.buttonText2}>완료</Text> 
                 </TouchableOpacity>
             </View>
+            <Modal
+                visible={showImagePickerModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowImagePickerModal(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalBox}>
+                        <TouchableOpacity style={styles.modalOption} onPress={handleCamera}>
+                            <Text style={styles.modalOptionText}>📷 카메라로 찍기</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalOption} onPress={handleGallery}>
+                            <Text style={styles.modalOptionText}>🖼 갤러리에서 불러오기</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.modalCancel}
+                            onPress={() => setShowImagePickerModal(false)}
+                        >
+                            <Text style={styles.modalCancelText}>취소</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
         
     );
@@ -367,5 +405,41 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 15,
-    }
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalBox: {
+        width: 280,
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        paddingVertical: 10,
+        alignItems: "center",
+        elevation: 10,
+    },
+    modalOption: {
+        paddingVertical: 12,
+        width: "100%",
+        alignItems: "center",
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#ddd",
+    },
+    modalOptionText: {
+        fontSize: 16,
+        color: "#333",
+    },
+    modalCancel: {
+        //marginTop: 10,
+        paddingVertical: 12,
+        width: "100%",
+        alignItems: "center",
+    },
+    modalCancelText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#FF5555",
+    },
 })

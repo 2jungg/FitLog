@@ -29,12 +29,10 @@ const initialWeightLog = [
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
-    console.log("Debug: 1");
     const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, initialWeightLog, 'BMI'));
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
     const [workoutData, setWorkoutData] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
-    console.log("Debug: 2");
     useEffect(() => {
         const loadData = async () => {
             const profile = await db.getProfile();
