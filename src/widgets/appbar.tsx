@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useData } from '../DataContext';
+import { Image } from "react-native";
 
 interface AppBarProps {
     title: string;
@@ -11,7 +12,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
 
     return (
         <View style={styles.appBar}>
-            <Text style={styles.title}>FitLog</Text>
+            <Image source={require('../../assets/logo/FitLog_change.png')} style={styles.logo}/>
             {title !== "프로필" && <Text style={styles.name}>{userData?.username} 님</Text>}
         </View>
     );
@@ -34,19 +35,11 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 10,
     },
-    container: {
-        height: 70 ,
-        backgroundColor: "#fff",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: "bold",
-        color: "#000",
-        marginLeft: 40,
-        fontFamily: "",
+    logo: {
+        width: 100,
+        height: 50,
+        marginLeft: 20,
+        alignItems: 'center',
     },
     name: {
         fontSize: 15,

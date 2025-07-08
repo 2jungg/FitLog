@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
         color: '#8285FB',
     },
     scrollcontainer:{
-        paddingVertical: 20,
+        paddingVertical: 10,
         alignItems: 'center',
         backgroundColor: '#f5f5f5'
     },
@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
         fontSize: 17, 
         width: 320,
         padding: 8,
+        fontWeight:'bold'
     },
     input:{
         flexDirection: 'row',

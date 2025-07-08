@@ -66,7 +66,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
     >
       <View style={styles.centeredView}>
         <View style={[styles.modalView, modalHeight ? { height: modalHeight } : {}]}>
-          <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.scrollViewContent}>
             <Text style={styles.modalText}>프로필 수정</Text>
 
             <Text style={styles.label}>프로필 이미지</Text>
@@ -108,7 +108,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               style={[styles.button, styles.buttonClose]}
               onPress={onClose}
             >
-              <Text style={styles.textStyleClose}>닫기</Text>
+            <Text style={styles.textStyleClose}>닫기</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.buttonSave]}
@@ -117,7 +117,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               <Text style={styles.textStyleSave}>완료</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
         </View>
       </View>
     </Modal>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    margin: 20,
+    margin: 10,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   modalText: {
     marginBottom: 15,
@@ -171,8 +171,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileImage: {
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
     borderRadius: 40,
     margin: 5,
     borderWidth: 2,
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     flex: 1,
     marginTop: 15,
+    marginHorizontal: 5,
   },
   buttonSave: {
     backgroundColor: '#8285FB',

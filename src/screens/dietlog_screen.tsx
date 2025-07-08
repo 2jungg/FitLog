@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#333",
         marginLeft: 10,
+        fontWeight: "bold"
     },
     fab:{
         position: 'absolute',

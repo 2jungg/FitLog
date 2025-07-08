@@ -130,6 +130,7 @@ export default function ProfileScreen(){
         '../../assets/profile_img/img_7.webp': require('../../assets/profile_img/img_7.webp'),
         '../../assets/profile_img/img_8.webp': require('../../assets/profile_img/img_8.webp'),
         '../../assets/profile_img/img_9.webp': require('../../assets/profile_img/img_9.webp'),
+        
     };
 
     return (
@@ -155,7 +156,7 @@ export default function ProfileScreen(){
                 initialUsername={userData?.username ?? ""}
                 initialMyGoal={userData?.myGoal ?? ""}
                 initialProfileImage={userData?.profileImage}
-                modalHeight={700}
+                modalHeight={650}
             />
             <View style={styles.row2}>
                 <View style={styles.column}>
@@ -212,7 +213,7 @@ export default function ProfileScreen(){
                             color: (opacity = 1) => `rgba(130, 133, 251, ${opacity})`,
                         };
                         const paddingDataset = {
-                            data: [minWeight - 10, maxWeight + 10],
+                            data: [minWeight - (maxWeight - minWeight) * 0.2, maxWeight + (maxWeight - minWeight) * 0.2],
                             withDots: false,
                             color: () => `rgba(0, 0, 0, 0)`,
                         };
@@ -254,7 +255,7 @@ export default function ProfileScreen(){
                             color: (opacity = 1) => `rgba(251, 133, 130, ${opacity})`,
                         };
                         const paddingDatasetForBMI = {
-                            data: [minBmi - 2, maxBmi + 2],
+                            data: [minBmi - 1, maxBmi + 1],
                             withDots: false,
                             color: () => `rgba(0, 0, 0, 0)`,
                         };

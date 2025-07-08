@@ -17,11 +17,20 @@ interface DataContextType {
     deleteWorkout: (workoutId: string) => void;
 }
 
+const initialWeightLog = [
+  { day: new Date("2025-07-03"), weight: 72.3, bmi: 22.32 },
+  { day: new Date("2025-07-04"), weight: 72.1, bmi: 22.26 },
+  { day: new Date("2025-07-05"), weight: 72.0, bmi: 22.22 },
+  { day: new Date("2025-07-06"), weight: 71.8, bmi: 22.16 },
+  { day: new Date("2025-07-07"), weight: 71.5, bmi: 22.07 },
+  { day: new Date("2025-07-08"), weight: 71.7, bmi: 22.13 },
+];
+
 const DataContext = createContext<DataContextType | null>(null);
 
 export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) => {
     console.log("Debug: 1");
-    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, [], 'BMI'));
+    const [userData, setUserData] = useState<Profile | null>(new Profile('이중권님', 180, initialWeightLog, 'BMI'));
     const [dietLogData, setDietLogData] = useState<DietLogGroupByDate>(new DietLogGroupByDate());
     const [workoutData, setWorkoutData] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
@@ -32,7 +41,7 @@ export const DataProvider: React.FC<{ children?: ReactNode}> = ({ children }) =>
             if (!profile) {
                 console.log(profile);
                 // 프로필이 없으면 기본 프로필 생성 및 저장
-                const defaultProfile = new Profile('이중권', 180, [], "BMI 정상으로 가보자!!");
+                const defaultProfile = new Profile('이중권', 180, initialWeightLog, "BMI 정상으로 가보자!!");
                 await db.saveProfile(defaultProfile);
                 setUserData(defaultProfile);
             } else {
