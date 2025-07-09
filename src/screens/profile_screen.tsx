@@ -282,7 +282,7 @@ export default function ProfileScreen(){
                             color: (opacity = 1) => `rgba(251, 133, 130, ${opacity})`,
                         };
                         const paddingDatasetForBMI = {
-                            data: [minBmi - 1, maxBmi + 1],
+                            data: [minBmi - 0.2, maxBmi + 0.2],
                             withDots: false,
                             color: () => `rgba(0, 0, 0, 0)`,
                         };
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     row1: {
-        marginTop: 20,
+        marginTop: 10,
         flexDirection: 'row',
         marginLeft: 40,
         marginBottom: 10
