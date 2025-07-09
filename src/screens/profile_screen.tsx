@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     row1: {
-        marginTop: 10,
+        marginTop: 25,
         flexDirection: 'row',
         marginLeft: 40,
         marginBottom: 10
