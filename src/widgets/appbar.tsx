@@ -2,6 +2,7 @@ import React, { useReducer, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useData } from '../DataContext';
 import { Image } from "react-native";
+import { Profile, WeightLog } from "../models/profile";
 
 interface AppBarProps {
     title: string;
@@ -13,6 +14,7 @@ const AppBar: React.FC<AppBarProps> = ({ title }) => {
     return (
         <View style={styles.appBar}>
             <Image source={require('../../assets/logo/FitLog_change.png')} style={styles.logo}/>
+            <Image source={{ uri: userData?.profileImage}} style={styles.profileImage} />
             {title !== "프로필" && <Text style={styles.name}>{userData?.username} 님</Text>}
         </View>
     );
@@ -47,6 +49,11 @@ const styles = StyleSheet.create({
         textAlign: "right",
         marginTop: 5,
         marginRight: 30,
+    },
+    profileImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
     },
 });
 
