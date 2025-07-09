@@ -74,11 +74,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
+        color: 'black',
     },
     modalText: {
         marginBottom: 15,
         textAlign: 'center',
         fontSize: 16,
+        color: 'black',
     },
 });
 

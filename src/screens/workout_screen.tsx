@@ -101,9 +101,9 @@ export default function WorkoutScreen() {
                                             item.endTime
                                         )}
                                     </Text>
-                                    <Text style={{ fontSize: 15 }}>
+                                    <Text style={{ fontSize: 15, color: 'black' }}>
                                         {item.workoutCategory} / 소모한 칼로리:{" "}
-                                        <Text style={{ fontWeight: "bold" }}>
+                                        <Text style={{ fontWeight: "bold", color: 'black' }}>
                                             {item.expectedCalory}kcal
                                         </Text>
                                     </Text>
@@ -138,7 +138,7 @@ export default function WorkoutScreen() {
                                             closeModal();
                                         }}
                                     >
-                                        <Text>삭제</Text>
+                                        <Text style={{color: 'black'}}>삭제</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         onPress={closeModal}
@@ -160,10 +160,10 @@ export default function WorkoutScreen() {
                                     />
                                 )}
 
-                                <Text>
-                                    운동 종류: {selectedWorkout.workoutCategory}
+                                <Text style={{color: 'black'}}>
+                                    {selectedWorkout.workoutCategory}
                                 </Text>
-                                <Text>
+                                <Text style={{ fontSize: 17, color: 'black'}}>
                                     운동 시간:{" "}
                                     {formatTimeRange(
                                         selectedWorkout.startTime,
@@ -171,13 +171,14 @@ export default function WorkoutScreen() {
                                     )}
                                 </Text>
                                 <View style={[styles.row, { padding: 20 }]}>
-                                    <Text style={{ fontSize: 20 }}>
+                                    <Text style={{ fontSize: 20, color: 'black' }}>
                                         소모한 칼로리:{" "}
                                     </Text>
                                     <Text
                                         style={{
                                             fontWeight: "bold",
                                             fontSize: 20,
+                                            color: 'black',
                                         }}
                                     >
                                         {selectedWorkout.expectedCalory}kcal
@@ -268,6 +269,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginBottom: 10,
+        color: 'black',
     },
     modalImage: {
         width: 200,
@@ -277,6 +279,7 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 25,
+        color: 'black',
     },
     modalbar:{
         flexDirection: "row",

@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
         width: 320,
         padding: 8,
         fontWeight: 'bold',
+        color: 'black',
     },
     input: {
         flexDirection: "row",
@@ -343,6 +344,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "bold",
         fontSize: 15,
+        color: 'black',
     },
     buttonText2: {
         textAlign: "center",
@@ -373,7 +375,7 @@ const styles = StyleSheet.create({
     },
     modalOptionText: {
         fontSize: 16,
-        color: "#333",
+        color: "black",
     },
     modalCancel: {
         //marginTop: 10,

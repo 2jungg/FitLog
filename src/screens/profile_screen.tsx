@@ -154,7 +154,7 @@ export default function ProfileScreen(){
                     <View style={styles.profile}>
                         <Text style={styles.name}>{userData?.username ?? "이름 없음"} 님</Text>
                         <Text style={{color: '#575757', fontSize: 10}}>나의 다짐</Text>
-                        <Text>{userData?.myGoal}</Text>
+                        <Text style={{color: 'black'}}>{userData?.myGoal}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -375,7 +375,8 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10
+        marginBottom: 10,
+        color: 'black',
     },
     button: {
         width: 310,
@@ -401,10 +402,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         fontWeight: 'bold',
+        color: 'black',
     },
     index: {
         fontSize: 15,
         marginBottom: 7,
+        color: 'black',
     },
     changeText: {
         marginTop: 15,
@@ -412,6 +415,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: 'center',
         fontSize: 18,
+        color: 'black',
     },
     tabButton: {
         flex: 1,

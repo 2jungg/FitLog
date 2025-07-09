@@ -141,7 +141,7 @@ const DietLogScreen = () => {
                                             closeModal();
                                         }}
                                     >
-                                        <Text>삭제</Text>
+                                        <Text style={{color: 'black'}}>삭제</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         onPress={closeModal}
@@ -307,6 +307,7 @@ const styles = StyleSheet.create({
     imgName: {
         textAlign: "center",
         fontSize: 14,
+        color: 'black',
     },
     imgTime: {
         fontSize: 12,
@@ -329,6 +330,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginBottom: 10,
+        color: 'black',
     },
     modalImage: {
         width: 200,
@@ -338,10 +340,11 @@ const styles = StyleSheet.create({
     },
     modalCloseText: {
         fontSize: 25,
+        color: 'black',
     },
     delBtnText: {
         fontSize: 5,
-        color: "#333",
+        color: "black",
         textAlign: "left",
     },
     subScore: {
@@ -357,6 +360,7 @@ const styles = StyleSheet.create({
     totScore: {
         fontSize: 25,
         margin: 15,
+        color: 'black',
     },
     commentBox: {
         backgroundColor: "#f0f0f0",
