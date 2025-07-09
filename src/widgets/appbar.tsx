@@ -9,8 +9,8 @@ interface AppBarProps {
 
 const AppBar: React.FC<AppBarProps> = ({ title }) => {
     const { userData } = useData();
-
     return (
+        
         <View style={styles.appBar}>
             <Image source={require('../../assets/logo/FitLog_change.png')} style={styles.logo}/>
             {title !== "프로필" && <Text style={styles.name}>{userData?.username} 님</Text>}
@@ -44,8 +44,6 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 15,
         color: "#000",
-        textAlign: "right",
-        marginTop: 5,
         marginRight: 30,
     },
 });

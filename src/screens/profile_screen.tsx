@@ -340,14 +340,13 @@ export default function ProfileScreen(){
 };
 
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff'
     },
     row1: {
-        marginTop: 10,
+        marginTop: 25,
         flexDirection: 'row',
         marginLeft: 40,
         marginBottom: 10
