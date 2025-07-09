@@ -1,101 +1,35 @@
-<<<<<<< HEAD
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
-
-# Getting Started
-
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
-
-## Step 1: Start Metro
-
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-=======
 # FitLog
->>>>>>> 1086874095e988ba54a3e03fc9c79f1cad1ce4a2
+
+FitLog는 사용자의 건강한 삶을 위해 운동 및 식단을 기록하고 관리할 수 있는 모바일 애플리케이션입니다.
+
+## 주요 기능
+
+### 1. 운동 기록
+
+-   **운동 기록 추가**: 날짜, 시간, 운동 종류, 소모 칼로리, 사진을 포함한 운동 내용을 기록할 수 있습니다.
+-   **운동 기록 조회**: 기록된 운동 내역을 목록 형태로 확인하고, 각 항목을 선택하여 상세 정보를 볼 수 있습니다.
+-   **운동 기록 삭제**: 불필요한 운동 기록을 삭제할 수 있습니다.
+
+### 2. 식단 기록
+
+-   **식단 기록 추가**: 날짜, 시간, 음식 사진을 기록하면 AI가 자동으로 음식 종류를 인식하고 영양소별 점수와 총점, 코멘트를 제공합니다.
+-   **식단 기록 조회**: 날짜별로 그룹화된 식단 기록을 확인하고, 각 사진을 선택하여 상세 영양 정보를 볼 수 있습니다.
+-   **식단 기록 삭제**: 불필요한 식단 기록을 삭제할 수 있습니다.
+
+### 3. 프로필 관리
+
+-   **사용자 정보 관리**: 사용자의 이름, 다짐, 프로필 이미지를 설정하고 수정할 수 있습니다.
+-   **신체 데이터 관리**: 키와 몸무게를 입력하여 BMI를 자동으로 계산하고, 매일의 신체 데이터를 기록할 수 있습니다.
+-   **건강 데이터 시각화**: 일별 몸무게와 BMI 변화 추이를 그래프 형태로 시각화하여 제공합니다.
+
+## 화면 구성
+
+-   **운동 탭**: 운동 기록을 관리하는 화면입니다.
+-   **식단 탭**: 식단 기록을 관리하는 화면입니다.
+-   **프로필 탭**: 사용자 정보 및 신체 데이터를 관리하고, 건강 관련 통계를 확인하는 화면입니다.
+
+## 기술 스택
+
+-   React Native
+-   TypeScript
+-   React Navigation
