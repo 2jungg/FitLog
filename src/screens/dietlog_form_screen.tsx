@@ -12,6 +12,8 @@ import {
 import CustomAlert from "./dietlog_popup";
 import { sendToGemini } from "../services/dietlog_api";
 import { launchCamera, launchImageLibrary, Asset } from "react-native-image-picker";
+import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import { Platform } from "react-native";
 import { useData } from "../DataContext";
 import { util_icons } from "../../assets/icon/icons";
 import { useNavigation } from "@react-navigation/native";
@@ -48,42 +50,68 @@ const DietLogFormScreen = () => {
 
     const [showImagePickerModal, setShowImagePickerModal] = useState(false);
 
+    const requestCameraPermission = async () => {
+        if (Platform.OS === 'android') {
+            const result = await request(PERMISSIONS.ANDROID.CAMERA);
+            return result === RESULTS.GRANTED;
+        }
+        return true;
+    };
+
+    const requestStoragePermission = async () => {
+        if (Platform.OS === 'android') {
+            const result = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+            return result === RESULTS.GRANTED;
+        }
+        return true;
+    };
+
     const handleCamera = async () => {
-    try {
-        const result = await launchCamera({ mediaType: "photo", includeBase64: true });
-        if (result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        if (asset.base64 && asset.type) {
-            setImageUrl(`data:${asset.type};base64,${asset.base64}`);
-            setBase64Image(asset.base64);
-            setMimeType(asset.type);
-        } else if (asset.uri) {
-            setImageUrl(asset.uri);
+        const granted = await requestCameraPermission();
+        if (!granted) {
+            showAlert("권한 필요", "카메라 접근 권한이 필요합니다.");
+            return;
         }
+        try {
+            const result = await launchCamera({ mediaType: "photo", includeBase64: true });
+            if (result.assets && result.assets.length > 0) {
+                const asset = result.assets[0];
+                if (asset.base64 && asset.type) {
+                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                    setBase64Image(asset.base64);
+                    setMimeType(asset.type);
+                } else if (asset.uri) {
+                    setImageUrl(asset.uri);
+                }
+            }
+        } catch (error) {
+            console.error("카메라 에러:", error);
         }
-    } catch (error) {
-        console.error("카메라 에러:", error);
-    }
-    setShowImagePickerModal(false);
+        setShowImagePickerModal(false);
     };
 
     const handleGallery = async () => {
-    try {
-        const result = await launchImageLibrary({ mediaType: "photo", includeBase64: true });
-        if (result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        if (asset.base64 && asset.type) {
-            setImageUrl(`data:${asset.type};base64,${asset.base64}`);
-            setBase64Image(asset.base64);
-            setMimeType(asset.type);
-        } else if (asset.uri) {
-            setImageUrl(asset.uri);
+        const granted = await requestStoragePermission();
+        if (!granted) {
+            showAlert("권한 필요", "갤러리 접근 권한이 필요합니다.");
+            return;
         }
+        try {
+            const result = await launchImageLibrary({ mediaType: "photo", includeBase64: true });
+            if (result.assets && result.assets.length > 0) {
+                const asset = result.assets[0];
+                if (asset.base64 && asset.type) {
+                    setImageUrl(`data:${asset.type};base64,${asset.base64}`);
+                    setBase64Image(asset.base64);
+                    setMimeType(asset.type);
+                } else if (asset.uri) {
+                    setImageUrl(asset.uri);
+                }
+            }
+        } catch (error) {
+            console.error("갤러리 에러:", error);
         }
-    } catch (error) {
-        console.error("갤러리 에러:", error);
-    }
-    setShowImagePickerModal(false);
+        setShowImagePickerModal(false);
     };
     return (
         <View style={styles.container}>
@@ -249,6 +277,7 @@ const styles = StyleSheet.create({
         width: 320,
         padding: 8,
         fontWeight: 'bold',
+        color: 'black',
     },
     input: {
         flexDirection: "row",
@@ -315,6 +344,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "bold",
         fontSize: 15,
+        color: 'black',
     },
     buttonText2: {
         textAlign: "center",
@@ -345,7 +375,7 @@ const styles = StyleSheet.create({
     },
     modalOptionText: {
         fontSize: 16,
-        color: "#333",
+        color: "black",
     },
     modalCancel: {
         //marginTop: 10,

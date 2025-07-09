@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
+    color: 'black',
   },
   label: {
     alignSelf: 'flex-start',
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 5,
+    color: 'black',
   },
   imageGridContainer: {
     flexDirection: 'row',

@@ -17,6 +17,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { WorkoutStackParamList } from './workout_stack';
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import { Platform } from "react-native";
 import { useData } from "../DataContext";
 import { Workout, WorkoutCategory } from "../models/workout";
 import { Profile, WeightLog } from "../models/profile";
@@ -111,7 +113,28 @@ export default function WorkoutFormScreen(){
 
     const [showImagePickerModal, setShowImagePickerModal] = useState(false);
 
+    const requestCameraPermission = async () => {
+        if (Platform.OS === 'android') {
+            const result = await request(PERMISSIONS.ANDROID.CAMERA);
+            return result === RESULTS.GRANTED;
+        }
+        return true;
+    };
+
+    const requestStoragePermission = async () => {
+        if (Platform.OS === 'android') {
+            const result = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+            return result === RESULTS.GRANTED;
+        }
+        return true;
+    };
+
     const handleCamera = async () => {
+        const granted = await requestCameraPermission();
+        if (!granted) {
+            // 권한 거부 시 사용자에게 알림
+            return;
+        }
         try {
             const result = await launchCamera({ mediaType: "photo", includeBase64: true });
             if (result.assets && result.assets.length > 0) {
@@ -131,6 +154,11 @@ export default function WorkoutFormScreen(){
     };
 
     const handleGallery = async () => {
+        const granted = await requestStoragePermission();
+        if (!granted) {
+            
+            return;
+        }
         try {
             const result = await launchImageLibrary({ mediaType: "photo", includeBase64: true });
             if (result.assets && result.assets.length > 0) {
@@ -226,7 +254,7 @@ export default function WorkoutFormScreen(){
                                 setShowExerciseList(false);
                             }}
                         >
-                            <Text>{item}</Text>
+                            <Text style={{color: 'black'}}>{item}</Text>
                         </Pressable>
                     ))}
                 </ScrollView>
@@ -330,7 +358,8 @@ const styles = StyleSheet.create({
         fontSize: 17, 
         width: 320,
         padding: 8,
-        fontWeight:'bold'
+        fontWeight:'bold',
+        color: 'black',
     },
     input:{
         flexDirection: 'row',
@@ -397,6 +426,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 15,
+        color: 'black',
     },
     buttonText2:{
         textAlign: 'center',
@@ -427,7 +457,7 @@ const styles = StyleSheet.create({
     },
     modalOptionText: {
         fontSize: 16,
-        color: "#333",
+        color: "black",
     },
     modalCancel: {
         //marginTop: 10,
