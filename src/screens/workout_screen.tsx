@@ -160,10 +160,10 @@ export default function WorkoutScreen() {
                                     />
                                 )}
 
-                                <Text style={{color: 'black'}}>
+                                <Text style={{ fontSize: 17, color: 'black'}}>
                                     {selectedWorkout.workoutCategory}
                                 </Text>
-                                <Text style={{ fontSize: 17, color: 'black'}}>
+                                <Text style={{ color: 'black'}}>
                                     운동 시간:{" "}
                                     {formatTimeRange(
                                         selectedWorkout.startTime,
