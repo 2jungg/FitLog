@@ -7,8 +7,6 @@ import {
     StyleSheet,
     Image,
     Pressable, 
-    Platform,
-    FlatList, 
     ScrollView, 
     Modal
 } from 'react-native';
